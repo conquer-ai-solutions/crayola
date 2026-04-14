@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crayola Ã Conquer AI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --crayola: #1E3A5F;
+      --crayola-lt: #2B5A8F;
+      --conquer: #E63329;
+      --conquer-dk: #B52820;
+      --green: #059669;
+      --amber: #D97706;
+      --purple: #7C3AED;
+      --teal: #0D9488;
+      --text-1: #111111;
+      --text-2: #555555;
+      --text-3: #888888;
+      --border: #E5E5E5;
+      --bg-alt: #F7F7F6;
+      --bg-dark: #0D0D0D;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; color: var(--text-1); line-height: 1.7; font-size: 16px; background: #fff; }
+
+    /* ââ NAV ââ */
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); height: 52px; display: flex; align-items: center; padding: 0 40px; gap: 0; }
+    .nav-brand { display: flex; align-items: center; gap: 8px; margin-right: 24px; flex-shrink: 0; }
+    .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--conquer); }
+    .nav-label { font-size: 13px; font-weight: 700; color: var(--text-1); letter-spacing: -0.01em; }
+    .nav-divider { width: 1px; height: 22px; background: var(--border); margin: 0 16px; flex-shrink: 0; }
+    .nav-links { display: flex; align-items: center; gap: 0; flex: 1; overflow-x: auto; scrollbar-width: none; }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a { font-size: 13px; font-weight: 500; color: var(--text-3); text-decoration: none; padding: 0 14px; height: 52px; display: flex; align-items: center; border-bottom: 2px solid transparent; white-space: nowrap; transition: .15s; }
+    .nav-links a:hover { color: var(--text-1); }
+    .nav-links a.active { color: var(--text-1); border-bottom-color: var(--conquer); font-weight: 600; }
+    .nav-tag { margin-left: auto; flex-shrink: 0; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); border: 1px solid var(--border); border-radius: 4px; padding: 3px 10px; font-family: 'Courier New', monospace; }
+
+    /* ââ LAYOUT ââ */
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 40px; }
+    .section { padding: 72px 0 80px; border-bottom: 1px solid var(--border); }
+    .section.alt { background: var(--bg-alt); }
+    .section.dark { background: var(--bg-dark); color: #fff; border-bottom-color: #222; }
+    .section.hero-section { border-bottom: none; }
+    .eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--teal); margin-bottom: 12px; font-family: 'Courier New', monospace; }
+    .section.dark .eyebrow { color: #6EE7B7; }
+    h1, h2 { font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+    h1 { font-size: 56px; margin-bottom: 16px; }
+    h2 { font-size: 40px; margin-bottom: 12px; color: var(--text-1); }
+    .section.dark h2 { color: #fff; }
+    .subtitle { font-size: 18px; color: var(--text-2); margin-bottom: 40px; max-width: 640px; }
+    .section.dark .subtitle { color: rgba(255,255,255,0.5); }
+
+    /* ââ HERO ââ */
+    .hero-section { padding: 80px 0 56px; background: linear-gradient(180deg, #fff 0%, var(--bg-alt) 100%); }
+    .hero-collab { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+    .hero-collab-name { font-size: 15px; font-weight: 700; color: var(--text-1); }
+    .hero-collab-dot { font-size: 24px; color: var(--text-3); line-height: 1; }
+    .hero-collab-logo { display: flex; align-items: center; gap: 6px; }
+    .hero-collab-logo .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--conquer); }
+    h1 span.accent { color: var(--conquer); }
+    .hero-meta { display: flex; gap: 32px; margin-top: 32px; flex-wrap: wrap; }
+    .hero-meta-item { font-size: 13px; color: var(--text-3); }
+    .hero-meta-item strong { display: block; color: var(--text-1); font-size: 14px; font-weight: 600; }
+
+    /* ââ STAT STRIP ââ */
+    .stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 0 0 48px; }
+    .stat-cell { padding: 24px 20px; border-right: 1px solid var(--border); text-align: center; background: #fff; }
+    .stat-cell:last-child { border-right: none; }
+    .stat-num { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; color: var(--text-1); font-family: 'Courier New', monospace; }
+    .stat-num.brand { color: var(--conquer); }
+    .stat-num.green { color: var(--green); }
+    .stat-num.amber { color: var(--amber); }
+    .stat-lbl { font-size: 11px; color: var(--text-3); font-weight: 500; margin-top: 4px; text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ââ CARDS ââ */
+    .card { border: 1px solid var(--border); border-radius: 8px; padding: 28px 32px; margin-bottom: 16px; background: #fff; }
+    .card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 12px; font-family: 'Courier New', monospace; }
+    .card-label.teal { color: var(--teal); }
+    .card-label.brand { color: var(--conquer); }
+    .card-label.green { color: var(--green); }
+    .card-label.purple { color: var(--purple); }
+    .card-label.amber { color: var(--amber); }
+    .card p { font-size: 15px; color: var(--text-2); line-height: 1.75; }
+    .card p em { font-style: normal; color: var(--text-1); font-weight: 600; }
+
+    /* ââ PEOPLE ââ */
+    .people-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 32px 0; }
+    .person { border: 1px solid var(--border); border-radius: 8px; padding: 20px; background: #fff; }
+    .person-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #fff; margin-bottom: 12px; }
+    .person-name { font-weight: 700; font-size: 15px; color: var(--text-1); }
+    .person-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
+    .person-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+
+    /* ââ OPPORTUNITY GRID ââ */
+    .opp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 32px 0; }
+    .opp { border: 1px solid var(--border); border-radius: 8px; padding: 28px; background: #fff; transition: border-color .15s; }
+    .opp:hover { border-color: #ccc; }
+    .opp.featured { border: 2px solid var(--conquer); }
+    .opp-num { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--conquer); font-family: 'Courier New', monospace; margin-bottom: 8px; }
+    .opp-title { font-weight: 700; font-size: 17px; margin-bottom: 8px; color: var(--text-1); }
+    .opp-body { font-size: 14px; color: var(--text-2); line-height: 1.65; }
+
+    /* ââ APPROACH ââ */
+    .approach-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 32px 0; }
+    .approach-step { border: 1px solid var(--border); border-radius: 8px; padding: 28px 24px; background: #fff; text-align: center; }
+    .approach-icon { font-size: 36px; margin-bottom: 16px; }
+    .approach-num { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--conquer); font-family: 'Courier New', monospace; margin-bottom: 8px; }
+    .approach-title { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+    .approach-desc { font-size: 14px; color: var(--text-2); line-height: 1.6; }
+
+    /* ââ BEFORE/AFTER ââ */
+    .shift-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; margin: 32px 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .shift-col { padding: 32px 28px; }
+    .shift-col.before { background: #FAFAFA; }
+    .shift-col.after { background: #F0FDF4; }
+    .shift-arrow { display: flex; align-items: center; justify-content: center; width: 48px; background: var(--bg-alt); font-size: 20px; color: var(--text-3); }
+    .shift-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; font-family: 'Courier New', monospace; margin-bottom: 16px; }
+    .shift-label.before-label { color: var(--amber); }
+    .shift-label.after-label { color: var(--green); }
+    .shift-item { font-size: 14px; color: var(--text-2); padding: 8px 0; border-bottom: 1px solid var(--border); line-height: 1.6; }
+    .shift-item:last-child { border-bottom: none; }
+    .shift-item strong { color: var(--text-1); }
+
+    /* ââ NEXT STEPS ââ */
+    .next-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 32px 0; }
+    .next-step { border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 28px 24px; background: rgba(255,255,255,0.04); }
+    .next-num { font-size: 28px; font-weight: 800; color: var(--conquer); font-family: 'Courier New', monospace; margin-bottom: 12px; }
+    .next-title { font-weight: 700; font-size: 16px; color: #fff; margin-bottom: 8px; }
+    .next-desc { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+
+    /* ââ FOOTER ââ */
+    footer { padding: 48px 40px; text-align: center; background: var(--bg-dark); color: #fff; }
+    footer .footer-brand { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; }
+    footer .footer-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--conquer); }
+    footer .footer-name { font-size: 15px; font-weight: 700; }
+    footer .footer-sub { font-size: 13px; color: rgba(255,255,255,0.35); }
+
+    /* ââ RESPONSIVE ââ */
+    @media (max-width: 700px) {
+      h1 { font-size: 36px; }
+      h2 { font-size: 28px; }
+      .stat-strip { grid-template-columns: repeat(2, 1fr); }
+      .people-grid { grid-template-columns: 1fr; }
+      .opp-grid { grid-template-columns: 1fr; }
+      .approach-grid { grid-template-columns: 1fr; }
+      .shift-grid { grid-template-columns: 1fr; }
+      .shift-arrow { width: 100%; height: 40px; }
+      .next-steps { grid-template-columns: 1fr; }
+      nav { padding: 0 20px; }
+      .wrap { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ââ NAV ââ -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-dot"></div>
+    <span class="nav-label">Conquer AI</span>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-links">
+    <a href="#top" class="active">Overview</a>
+    <a href="#landscape">Your Landscape</a>
+    <a href="#opportunities">Where AI Lands</a>
+    <a href="#approach">How We Work</a>
+    <a href="#shift">The Shift</a>
+    <a href="#next">Next Steps</a>
+  </div>
+  <span class="nav-tag">14 Apr 2026</span>
+</nav>
+
+<!-- ââ HERO ââ -->
+<section class="section hero-section" id="top">
+  <div class="wrap">
+    <div class="hero-collab">
+      <span class="hero-collab-name">Crayola</span>
+      <span class="hero-collab-dot">&times;</span>
+      <div class="hero-collab-logo">
+        <div class="dot" style="width:6px;height:6px;border-radius:50%;background:var(--conquer);"></div>
+        <span style="font-size:14px;font-weight:700;">Conquer AI</span>
+      </div>
+    </div>
+    <h1>Creativity meets <span class="accent">intelligence.</span></h1>
+    <p class="subtitle">Exploring how AI can accelerate Crayola's next chapter â from consumer experience to global operations to the future of creative play.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>Discovery Session</strong>14 April 2026 &middot; 6:30 PM</div>
+      <div class="hero-meta-item"><strong>Format</strong>Video call &middot; 90 minutes</div>
+      <div class="hero-meta-item"><strong>Objective</strong>Understand priorities, map opportunities</div>
+    </div>
+  </div>
+</section>
+
+<!-- ââ STAT STRIP ââ -->
+<section class="section alt" id="landscape">
+  <div class="wrap">
+    <div class="stat-strip">
+      <div class="stat-cell"><div class="stat-num">100+</div><div class="stat-lbl">Year Legacy</div></div>
+      <div class="stat-cell"><div class="stat-num green">3B</div><div class="stat-lbl">Crayons / Year</div></div>
+      <div class="stat-cell"><div class="stat-num amber">80+</div><div class="stat-lbl">Countries</div></div>
+      <div class="stat-cell"><div class="stat-num brand">~900</div><div class="stat-lbl">Employees</div></div>
+    </div>
+
+    <div class="eyebrow">Your Landscape</div>
+    <h2>What we see in Crayola's world</h2>
+    <p class="subtitle">A creativity brand at an inflection point â repositioning for the digital age while scaling globally.</p>
+
+    <div class="card">
+      <div class="card-label brand">Campaign for Creativity</div>
+      <p>Crayola is moving from "art supplies company" to <em>creativity-as-life-skill brand</em>. That repositioning touches everything â product innovation, digital experiences, and how you connect with a generation of kids who are digital-native. AI doesn't replace creativity â it amplifies it.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-label teal">Global Transformation</div>
+      <p>A multi-year initiative to standardise technology and business processes across all regions. Centralised ERP, unified data foundations, consistent operations. This creates the <em>infrastructure layer</em> that makes AI possible at enterprise scale â clean data, connected systems, a single source of truth.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-label green">Automation Heritage</div>
+      <p>Crayola bet on automation when others were offshoring â investing in Lean Six Sigma and high-speed production lines that now produce 3 billion crayons a year. That decision saved millions and built a culture that <em>understands operational technology investment</em>. AI is the next chapter in that story.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-label purple">Global Expansion</div>
+      <p>Crayola Experience venues moving into new international markets. New product innovations like Story Creator blending physical and digital play. Entertainment programming expanding. Every new market, every new format adds <em>complexity that AI can help manage</em> â localisation, consumer insights, supply chain coordination.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ââ PEOPLE ââ -->
+<section class="section">
+  <div class="wrap">
+    <div class="eyebrow">Today's Conversation</div>
+    <h2>The team in the room</h2>
+    <p class="subtitle">A cross-functional group spanning commercial, finance, technology, consumer experience, eCommerce, and marketing.</p>
+
+    <div class="people-grid">
+      <div class="person">
+        <div class="person-avatar" style="background:var(--conquer);">BT</div>
+        <div class="person-name">Ben Thomas</div>
+        <div class="person-title" style="color:var(--conquer);">EVP & Chief Commercial Officer</div>
+        <div class="person-desc">Leading Crayola's AI exploration from the commercial side. Based in London.</div>
+      </div>
+      <div class="person">
+        <div class="person-avatar" style="background:var(--amber);">SH</div>
+        <div class="person-name">Stephen Hoff</div>
+        <div class="person-title" style="color:var(--amber);">EVP & CFO</div>
+        <div class="person-desc">Financial strategy and investment. McKinsey background. With Crayola since 2016.</div>
+      </div>
+      <div class="person">
+        <div class="person-avatar" style="background:var(--purple);">RS</div>
+        <div class="person-name">Richard Stringer</div>
+        <div class="person-title" style="color:var(--purple);">EVP, Consumer Experience</div>
+        <div class="person-desc">Oversees Crayola Experience venues and consumer-facing product strategy.</div>
+      </div>
+      <div class="person">
+        <div class="person-avatar" style="background:var(--teal);">AS</div>
+        <div class="person-name">Arvind Sahu</div>
+        <div class="person-title" style="color:var(--teal);">VP Global IT / CIO</div>
+        <div class="person-desc">Leading the global technology transformation. ORBIE Award winner 2025.</div>
+      </div>
+      <div class="person">
+        <div class="person-avatar" style="background:var(--green);">NQ</div>
+        <div class="person-name">Niall Quinn</div>
+        <div class="person-title" style="color:var(--green);">VP, Global eCommerce</div>
+        <div class="person-desc">Owns digital commerce â D2C, online experience, and personalisation.</div>
+      </div>
+      <div class="person">
+        <div class="person-avatar" style="background:#D97706;">CS</div>
+        <div class="person-name">Craig Skinner</div>
+        <div class="person-title" style="color:var(--amber);">VP, Platform Marketing</div>
+        <div class="person-desc">Innovation, design R&D, and marketing. Named on Crayola patents.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ââ OPPORTUNITIES ââ -->
+<section class="section alt" id="opportunities">
+  <div class="wrap">
+    <div class="eyebrow">Opportunity Mapping</div>
+    <h2>Where AI could create value</h2>
+    <p class="subtitle">Initial hypotheses based on your business context. Today's conversation will help us sharpen these together.</p>
+
+    <div class="opp-grid">
+      <div class="opp featured">
+        <div class="opp-num">Opportunity 01</div>
+        <div class="opp-title">Consumer Experience & Personalisation</div>
+        <div class="opp-body">AI-powered personalised creative experiences â both digital (D2C, apps, eCommerce) and physical (Crayola Experience venues). Personalised product recommendations, dynamic venue experiences, AI-assisted creative tools for kids.</div>
+      </div>
+      <div class="opp">
+        <div class="opp-num">Opportunity 02</div>
+        <div class="opp-title">Global Commercial Intelligence</div>
+        <div class="opp-body">Unified market intelligence across regions. Demand forecasting, pricing optimisation, and competitive analysis â especially as you expand into new markets internationally.</div>
+      </div>
+      <div class="opp">
+        <div class="opp-num">Opportunity 03</div>
+        <div class="opp-title">Marketing & Brand at Scale</div>
+        <div class="opp-body">Content generation, localisation workflows, and campaign analytics across regions. The Campaign for Creativity needs to scale globally â AI makes that feasible without proportional headcount growth.</div>
+      </div>
+      <div class="opp">
+        <div class="opp-num">Opportunity 04</div>
+        <div class="opp-title">Operational Efficiency</div>
+        <div class="opp-body">AI-augmented supply chain planning, demand forecasting, and production optimisation â building on Crayola's existing automation heritage with an intelligence layer on top.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ââ APPROACH ââ -->
+<section class="section" id="approach">
+  <div class="wrap">
+    <div class="eyebrow">How Conquer Works</div>
+    <h2>Start specific. Prove value. Scale fast.</h2>
+    <p class="subtitle">We don't write strategies that sit on shelves. We find one problem, prove AI solves it in weeks, then expand.</p>
+
+    <div class="approach-grid">
+      <div class="approach-step">
+        <div class="approach-icon">&#x1F3AF;</div>
+        <div class="approach-num">Week 1â2</div>
+        <div class="approach-title">Discovery & Use Case Mapping</div>
+        <div class="approach-desc">Deep-dive into your operations. Identify the highest-value AI opportunity with the clearest path to measurable impact.</div>
+      </div>
+      <div class="approach-step">
+        <div class="approach-icon">&#x26A1;</div>
+        <div class="approach-num">Week 3â6</div>
+        <div class="approach-title">Build & Prove</div>
+        <div class="approach-desc">Working AI solution against a real problem. Not a PowerPoint â a functioning system your team can use and evaluate.</div>
+      </div>
+      <div class="approach-step">
+        <div class="approach-icon">&#x1F680;</div>
+        <div class="approach-num">Week 7+</div>
+        <div class="approach-title">Scale & Expand</div>
+        <div class="approach-desc">Proven solution becomes the foundation. Expand to adjacent use cases, functions, and regions â with confidence because it already works.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ââ THE SHIFT ââ -->
+<section class="section alt" id="shift">
+  <div class="wrap">
+    <div class="eyebrow">The Transformation</div>
+    <h2>What changes</h2>
+    <p class="subtitle">The shift AI creates â moving from manual effort and fragmented insight to intelligent, scalable operations.</p>
+
+    <div class="shift-grid">
+      <div class="shift-col before">
+        <div class="shift-label before-label">Today</div>
+        <div class="shift-item"><strong>Manual insight gathering</strong> across disconnected regional data</div>
+        <div class="shift-item"><strong>One-size-fits-all</strong> consumer experiences across channels</div>
+        <div class="shift-item"><strong>Campaign localisation</strong> requires proportional team scaling</div>
+        <div class="shift-item"><strong>Reactive decision-making</strong> based on lagging indicators</div>
+      </div>
+      <div class="shift-arrow">&rarr;</div>
+      <div class="shift-col after">
+        <div class="shift-label after-label">With AI</div>
+        <div class="shift-item"><strong>Unified intelligence layer</strong> with real-time commercial visibility</div>
+        <div class="shift-item"><strong>Personalised experiences</strong> that adapt to each consumer</div>
+        <div class="shift-item"><strong>AI-powered localisation</strong> that scales without linear headcount</div>
+        <div class="shift-item"><strong>Predictive operations</strong> that anticipate and act proactively</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ââ NEXT STEPS ââ -->
+<section class="section dark" id="next">
+  <div class="wrap">
+    <div class="eyebrow">What Happens Next</div>
+    <h2>From conversation to clarity</h2>
+    <p class="subtitle">Today is about understanding. Here's how we turn that understanding into action.</p>
+
+    <div class="next-steps">
+      <div class="next-step">
+        <div class="next-num">01</div>
+        <div class="next-title">Today: Listen & Learn</div>
+        <div class="next-desc">Understand your priorities, challenges, and what success looks like. We're here to ask good questions, not pitch solutions.</div>
+      </div>
+      <div class="next-step">
+        <div class="next-num">02</div>
+        <div class="next-title">Next: Use Case Session</div>
+        <div class="next-desc">A focused 2-hour working session where we map specific AI opportunities against your priorities and score them by impact and feasibility.</div>
+      </div>
+      <div class="next-step">
+        <div class="next-num">03</div>
+        <div class="next-title">Then: Prove It Works</div>
+        <div class="next-desc">Build a working AI solution against your #1 use case. Real data, real results, real evaluation â in weeks, not months.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ââ FOOTER ââ -->
+<footer>
+  <div class="footer-brand">
+    <div class="footer-dot"></div>
+    <span class="footer-name">Conquer AI</span>
+  </div>
+  <div class="footer-sub">conquer.ai &middot; Discovery session &middot; April 2026</div>
+</footer>
+
+<script>
+// Active nav tracking
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav .nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 80) current = s.getAttribute('id');
+  });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
