@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crayola â Whiteboard Prep Briefing</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #E63329;
+      --brand-dk:#B52820;
+      --green: #059669;
+      --red: #DC2626;
+      --amber: #D97706;
+      --purple: #7C3AED;
+      --teal: #0D9488;
+      --text-1: #111111;
+      --text-2: #555555;
+      --text-3: #888888;
+      --border: #E5E5E5;
+      --bg-alt: #F7F7F6;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; color: var(--text-1); line-height: 1.7; font-size: 16px; background: #fff; }
+
+    /* ââ NAV ââ */
+    .topnav { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid var(--border); height: 48px; display: flex; align-items: center; padding: 0 32px; gap: 18px; }
+    .topnav .logo { font-weight: 800; font-size: 15px; color: var(--brand); white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+    .topnav .logo .dot { width: 6px; height: 6px; background: var(--brand); border-radius: 50%; }
+    .topnav .divider { width: 1px; height: 22px; background: var(--border); }
+    .topnav a { font-size: 13px; font-weight: 500; color: var(--text-2); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; transition: .15s; }
+    .topnav a:hover, .topnav a.active { color: var(--text-1); border-color: var(--brand); }
+    .topnav .badge { margin-left: auto; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: 'Courier New', monospace; }
+
+    /* ââ LAYOUT ââ */
+    .section { padding: 64px 0; }
+    .section.alt { background: var(--bg-alt); }
+    .section.dark { background: #111; color: #fff; }
+    .section.dark .section-sub, .section.dark .text-2 { color: #aaa; }
+    .content-wrap { max-width: 960px; margin: 0 auto; padding: 0 32px; }
+    .section-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--brand); margin-bottom: 8px; font-family: 'Courier New', monospace; }
+    .section-headline { font-size: 40px; font-weight: 800; line-height: 1.15; margin-bottom: 8px; }
+    .section-sub { font-size: 17px; color: var(--text-2); margin-bottom: 32px; }
+
+    /* ââ HERO ââ */
+    .hero { padding: 80px 0 64px; }
+    .hero .section-headline { font-size: 52px; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 32px; margin-top: 24px; }
+    .meta-item { font-size: 13px; color: var(--text-3); }
+    .meta-item strong { color: var(--text-1); display: block; font-size: 14px; }
+
+    /* ââ INFO CARDS ââ */
+    .info-card { border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin-bottom: 16px; }
+    .info-card-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; font-family: 'Courier New', monospace; }
+    .info-card-label.red { color: var(--red); }
+    .info-card-label.amber { color: var(--amber); }
+    .info-card-label.brand { color: var(--brand); }
+    .info-card-label.green { color: var(--green); }
+    .info-card-label.purple { color: var(--purple); }
+    .info-card-label.teal { color: var(--teal); }
+    .info-card p { color: var(--text-2); font-size: 15px; }
+    .info-card p em { font-style: italic; color: var(--text-1); }
+
+    /* ââ STAT STRIP ââ */
+    .stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin: 32px 0; }
+    .stat-item { text-align: center; }
+    .stat-num { font-size: 36px; font-weight: 800; color: var(--brand); }
+    .stat-num.green { color: var(--green); }
+    .stat-num.amber { color: var(--amber); }
+    .stat-label { font-size: 12px; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; font-family: 'Courier New', monospace; }
+
+    /* ââ PEOPLE GRID ââ */
+    .people-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 24px 0; }
+    @media (min-width: 700px) { .people-grid { grid-template-columns: repeat(3, 1fr); } }
+    .person-card { border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .person-card .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; margin-bottom: 10px; }
+    .person-card .name { font-weight: 700; font-size: 15px; }
+    .person-card .role { font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .person-card .role.brand { color: var(--brand); }
+    .person-card .role.green { color: var(--green); }
+    .person-card .role.purple { color: var(--purple); }
+    .person-card .role.teal { color: var(--teal); }
+    .person-card .role.amber { color: var(--amber); }
+    .person-card .desc { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+
+    /* ââ HOOK BLOCKS ââ */
+    .hook { border-left: 3px solid var(--border); padding: 14px 18px; margin-bottom: 14px; border-radius: 0 6px 6px 0; background: var(--bg-alt); }
+    .hook.warn { border-color: var(--amber); }
+    .hook.danger { border-color: var(--red); }
+    .hook.good { border-color: var(--green); }
+    .hook.info { border-color: var(--brand); }
+    .hook.purple-hook { border-color: var(--purple); }
+    .hook strong { font-size: 14px; }
+    .hook p { font-size: 14px; color: var(--text-2); margin-top: 2px; }
+
+    /* ââ ACCORDION ââ */
+    .accordion { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+    .accordion-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; cursor: pointer; background: #fff; }
+    .accordion-header:hover { background: var(--bg-alt); }
+    .accordion-type { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding: 2px 8px; border-radius: 4px; color: #fff; font-family: 'Courier New', monospace; }
+    .accordion-type.show { background: var(--brand); }
+    .accordion-type.ask { background: var(--green); }
+    .accordion-type.deep { background: var(--purple); }
+    .accordion-type.critical { background: var(--red); }
+    .accordion-type.warn { background: var(--amber); }
+    .accordion-type.info { background: var(--teal); }
+    .accordion-title { font-weight: 600; font-size: 15px; flex: 1; }
+    .accordion-arrow { font-size: 14px; transition: transform .2s; color: var(--text-3); }
+    .accordion-body { padding: 0 18px 16px; display: none; font-size: 14px; color: var(--text-2); line-height: 1.7; }
+    .accordion.open .accordion-body { display: block; }
+    .accordion.open .accordion-arrow { transform: rotate(180deg); }
+
+    /* ââ OPP GRID ââ */
+    .opp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 24px 0; }
+    .opp-card { border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+    .opp-card.primary { border: 2px solid var(--brand); }
+    .opp-num { font-size: 11px; font-weight: 700; color: var(--text-3); font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
+    .opp-title { font-weight: 700; font-size: 17px; margin-bottom: 6px; }
+    .opp-body { font-size: 14px; color: var(--text-2); line-height: 1.6; }
+
+    /* ââ TIMELINE ââ */
+    .timeline { display: flex; flex-direction: column; gap: 0; margin: 24px 0; }
+    .tl-item { display: flex; gap: 16px; }
+    .tl-track { display: flex; flex-direction: column; align-items: center; width: 20px; }
+    .tl-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brand); flex-shrink: 0; margin-top: 6px; }
+    .tl-dot.green { background: var(--green); }
+    .tl-dot.amber { background: var(--amber); }
+    .tl-line { width: 2px; background: var(--border); flex: 1; }
+    .tl-content { padding-bottom: 28px; }
+    .tl-date { font-size: 11px; font-weight: 700; color: var(--text-3); font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: .08em; }
+    .tl-title { font-weight: 700; font-size: 15px; margin-top: 2px; }
+    .tl-body { font-size: 14px; color: var(--text-2); margin-top: 4px; line-height: 1.6; }
+
+    /* ââ BLOCKQUOTE ââ */
+    blockquote { border-left: 3px solid var(--brand); padding: 12px 20px; margin: 24px 0; font-style: italic; color: var(--text-2); }
+    blockquote cite { display: block; font-style: normal; font-size: 13px; color: var(--text-3); margin-top: 6px; }
+
+    /* ââ TABLE ââ */
+    table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px; }
+    th { text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); padding: 10px 14px; border-bottom: 2px solid var(--border); font-family: 'Courier New', monospace; }
+    td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text-2); }
+    tr:hover td { background: var(--bg-alt); }
+    .phase-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; color: #fff; font-family: 'Courier New', monospace; }
+    .phase-badge.p1 { background: var(--brand); }
+    .phase-badge.p2 { background: var(--purple); }
+    .phase-badge.p3 { background: var(--teal); }
+
+    @media (max-width: 600px) {
+      .stat-strip { grid-template-columns: repeat(2, 1fr); }
+      .people-grid { grid-template-columns: 1fr; }
+      .opp-grid { grid-template-columns: 1fr; }
+      .hero .section-headline { font-size: 36px; }
+      .section-headline { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ââ NAV ââ -->
+<nav class="topnav">
+  <div class="logo">Conquer AI <span class="dot"></span></div>
+  <div class="divider"></div>
+  <a href="#account" class="active">Account</a>
+  <a href="#room">The Room</a>
+  <a href="#context">Context</a>
+  <a href="#use-cases">Opportunity Areas</a>
+  <a href="#playbook">Whiteboard Playbook</a>
+  <a href="#watch-outs">Watch-Outs</a>
+  <a href="#history">History</a>
+  <span class="badge">Internal Â· Confidential</span>
+</nav>
+
+<!-- ââ HERO ââ -->
+<section class="section hero" id="account">
+  <div class="content-wrap">
+    <div class="section-eyebrow">First Meeting Â· Discovery</div>
+    <h1 class="section-headline">Crayola</h1>
+    <p class="section-sub">Global creativity brand exploring AI across commercial, consumer experience, and digital operations. First meeting â intro via Angel Mendez (Jan 2026). NDA signed.</p>
+    <div class="meta-row">
+      <div class="meta-item"><strong>14 Apr 2026 Â· 6:30 PM</strong>Conquer AI Ã Crayola</div>
+      <div class="meta-item"><strong>Format</strong>Video call Â· 90 mins</div>
+      <div class="meta-item"><strong>Conquer Team</strong>Bolaji, Tom, David Carter, Luke Morrisen, James Mayo</div>
+      <div class="meta-item"><strong>Introduction</strong>Angel Mendez â Ben Thomas (Jan 2026)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ââ STAT STRIP ââ -->
+<section class="section alt">
+  <div class="content-wrap">
+    <div class="stat-strip">
+      <div class="stat-item"><div class="stat-num">~900</div><div class="stat-label">Employees</div></div>
+      <div class="stat-item"><div class="stat-num green">3B</div><div class="stat-label">Crayons / Year</div></div>
+      <div class="stat-item"><div class="stat-num amber">6</div><div class="stat-label">Their Attendees</div></div>
+      <div class="stat-item"><div class="stat-num">100+</div><div class="stat-label">Year Legacy</div></div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-label brand">What They Are</div>
+      <p>Crayola is one of the world's most recognised creativity brands, owned by Hallmark Cards. Headquartered in Easton, Pennsylvania, they manufacture art supplies, craft products, and creative play experiences. Their product portfolio spans crayons, markers, colored pencils, paints, modelling compounds, and â increasingly â digital-physical hybrid experiences like Story Creator. They also operate Crayola Experience venues (location-based entertainment), expanding globally into China and South Korea.</p>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-label green">Why This Meeting Matters</div>
+      <p>This is a <em>C-suite-loaded first call</em>. Their CFO, CCO, CIO, and three VPs are attending â this isn't a fact-finding exercise by one curious exec. The breadth of seniority and functional coverage (finance, commercial, IT, eCommerce, consumer experience, marketing) signals they're evaluating AI as a cross-functional initiative with real budget potential. Ben Thomas (CCO, London) was introduced by Angel Mendez and is leading from the commercial side â meaning this is business-led, not an IT project.</p>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-label purple">Strategic Context</div>
+      <p>Crayola is in the second year of its "Campaign for Creativity" â repositioning creativity as an essential life skill for digital-native kids. They're simultaneously running a <em>multi-year global IT transformation</em> under CIO Arvind Sahu (centralising ERP across all regions), expanding Crayola Experience venues internationally, and pushing into digital commerce under Niall Quinn. CEO Pete Ruggiero has a strong automation DNA â he bet on automation over offshoring in 2007 and it paid off. AI is the natural next step.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ââ THE ROOM ââ -->
+<section class="section" id="room">
+  <div class="content-wrap">
+    <div class="section-eyebrow">Who You're Meeting</div>
+    <h2 class="section-headline">The Room</h2>
+    <p class="section-sub">Six senior Crayola stakeholders across every major function. Listen for who frames the problem â that tells you where the opportunity sits.</p>
+
+    <div class="people-grid">
+      <div class="person-card">
+        <div class="avatar" style="background:var(--brand);">BT</div>
+        <div class="name">Ben Thomas</div>
+        <div class="role brand">EVP & Chief Commercial Officer</div>
+        <div class="desc">Based in London. Organiser of this call. Charged with Crayola's AI initiative. Introduced via Angel Mendez in Jan 2026. Commercial leader â the fact he's driving this (not IT) tells you the initiative is revenue/growth-focused.</div>
+      </div>
+      <div class="person-card">
+        <div class="avatar" style="background:var(--red);">SH</div>
+        <div class="name">Stephen Hoff</div>
+        <div class="role amber">EVP & CFO</div>
+        <div class="desc">With Crayola since 2016. McKinsey background. The CFO being in the room on a first call means there's a budget conversation behind this. He'll be evaluating ROI and commercial viability.</div>
+      </div>
+      <div class="person-card">
+        <div class="avatar" style="background:var(--purple);">RS</div>
+        <div class="name">Richard Stringer</div>
+        <div class="role purple">EVP, Consumer Experience & Merchandising</div>
+        <div class="desc">Design school (Otis/Parsons). Oversees Crayola Experience venues and consumer-facing product strategy. If AI touches consumer experience or retail, he's the stakeholder.</div>
+      </div>
+      <div class="person-card">
+        <div class="avatar" style="background:var(--teal);">AS</div>
+        <div class="name">Arvind Sahu</div>
+        <div class="role teal">VP Global IT / Global CIO</div>
+        <div class="desc">MBA, PMP. Leading multi-year global transformation â centralising ERP and tech platforms across all regions. Won NY CIO ORBIE Award 2025. Background at News Corp, Purdue Pharma. Your technical counterpart. He'll evaluate feasibility, architecture, integration.</div>
+      </div>
+      <div class="person-card">
+        <div class="avatar" style="background:var(--green);">NQ</div>
+        <div class="name">Niall Quinn</div>
+        <div class="role green">VP, Global eCommerce</div>
+        <div class="desc">Previously at Newell Brands, Yankee Candle, Vax. Owns the digital commerce play. If there's an AI angle around personalisation, D2C, or online experience â he's the owner.</div>
+      </div>
+      <div class="person-card">
+        <div class="avatar" style="background:var(--amber);">CS</div>
+        <div class="name">Craig Skinner</div>
+        <div class="role amber">VP, Platform Marketing</div>
+        <div class="desc">Has held innovation, design R&D, sustainability, and consumer experience roles at Crayola. Named on Crayola patents. Brings the product/marketing lens. Montblanc background.</div>
+      </div>
+    </div>
+
+    <div class="hook info">
+      <strong>Reading the Room</strong>
+      <p>Ben Thomas (commercial) is leading, not Arvind Sahu (IT). That's significant. This is a business-led initiative with IT support â not an IT project looking for a sponsor. Let their intros tell you who the real decision-maker is versus the evaluator.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ââ CONTEXT ââ -->
+<section class="section alt" id="context">
+  <div class="content-wrap">
+    <div class="section-eyebrow">Company Intelligence</div>
+    <h2 class="section-headline">Context That Matters</h2>
+    <p class="section-sub">What's happening inside Crayola right now â and why AI is on the agenda.</p>
+
+    <div class="info-card">
+      <div class="info-card-label brand">Campaign for Creativity (Year 2)</div>
+      <p>Crayola is repositioning from "art supplies company" to "creativity-as-life-skill" brand. This shapes everything â product innovation (Story Creator with voice recording), experience expansion (Crayola Experience venues going global), and how they think about digital-native children as their audience. AI could accelerate personalised creative experiences at scale.</p>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-label teal">Global IT Transformation (Arvind's Remit)</div>
+      <p>Arvind Sahu is leading a <em>multi-year initiative to standardise business processes and technology platforms across all regions</em>, including implementing a centralised ERP ecosystem across all subsidiaries. This means they're in the middle of a data/infrastructure modernisation â which is both an opportunity (clean data foundation for AI) and a constraint (IT bandwidth already stretched).</p>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-label green">Automation DNA</div>
+      <p>CEO Pete Ruggiero bet on automation over offshoring in 2007 when everyone else was moving production overseas. Invested in Lean Six Sigma and high-speed production â now producing 3 billion crayons/year on highly automated lines. First wave saved $1.5M. They understand the value of operational technology investment. AI is the next logical step in that continuum.</p>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-label purple">Global Expansion Play</div>
+      <p>Crayola Experience venues expanding to China and South Korea. Moving into entertainment programming. 2026 Toy Fair innovations include Story Creator (voice-on-drawings), expanded Scribble Scrubbies line, and Clicks products. This global push creates complexity that AI could help manage â localisation, supply chain, consumer insights across markets.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ââ USE CASES / OPPORTUNITY AREAS ââ -->
+<section class="section" id="use-cases">
+  <div class="content-wrap">
+    <div class="section-eyebrow">Opportunity Mapping</div>
+    <h2 class="section-headline">Where AI Could Land</h2>
+    <p class="section-sub">Hypotheses based on who's in the room and what we know. Let Crayola lead â but be ready to frame these if prompted.</p>
+
+    <div class="opp-grid">
+      <div class="opp-card primary">
+        <div class="opp-num">Opportunity 01</div>
+        <div class="opp-title">Consumer Experience & Personalisation</div>
+        <div class="opp-body">AI-driven personalised creative experiences â both digital (D2C, app, eCommerce) and physical (Crayola Experience venues). With Richard Stringer (Consumer Experience) and Niall Quinn (eCommerce) both in the room, this is likely the hottest area. Think: personalised product recommendations, AI-powered creative tools for kids, dynamic venue experiences.</div>
+      </div>
+      <div class="opp-card">
+        <div class="opp-num">Opportunity 02</div>
+        <div class="opp-title">Global Commercial Intelligence</div>
+        <div class="opp-body">Ben Thomas as CCO likely sees fragmented commercial data across regions. AI for market intelligence, demand forecasting, pricing optimisation, and competitive analysis â especially as they expand into new markets (China, South Korea). The global ERP consolidation creates a foundation for this.</div>
+      </div>
+      <div class="opp-card">
+        <div class="opp-num">Opportunity 03</div>
+        <div class="opp-title">Marketing & Brand at Scale</div>
+        <div class="opp-body">Craig Skinner's platform marketing remit + global expansion = content, localisation, and campaign complexity. AI for content generation, creative testing, localisation workflows, and marketing analytics across regions. The "Campaign for Creativity" itself needs to scale globally.</div>
+      </div>
+      <div class="opp-card">
+        <div class="opp-num">Opportunity 04</div>
+        <div class="opp-title">Operational Efficiency & Supply Chain</div>
+        <div class="opp-body">Given the automation heritage and the CFO's presence â there may be a play around AI-augmented supply chain, demand planning, or operational optimisation. The global expansion adds complexity. Stephen Hoff will be interested in hard ROI stories here.</div>
+      </div>
+    </div>
+
+    <div class="hook purple-hook">
+      <strong>Don't Lead With Solutions</strong>
+      <p>These are hypotheses. The first meeting should be 80% listening, 20% framing. Let them tell you what hurts. The composition of the room will naturally surface priorities.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ââ WHITEBOARD PLAYBOOK ââ -->
+<section class="section alt" id="playbook">
+  <div class="content-wrap">
+    <div class="section-eyebrow">Conversation Guide</div>
+    <h2 class="section-headline">Whiteboard Playbook</h2>
+    <p class="section-sub">Moves to make during the call. This is a first meeting â focus on understanding, not selling.</p>
+
+    <div class="accordion" onclick="toggle(this)">
+      <div class="accordion-header">
+        <span class="accordion-type show">Show</span>
+        <span class="accordion-title">Open: Acknowledge the room's seniority</span>
+        <span class="accordion-arrow">â¼</span>
+      </div>
+      <div class="accordion-body">
+        This isn't a typical intro call â the CFO, CCO, CIO, and three VPs don't show up for a vendor pitch. Acknowledge it: <em>"We appreciate the time and breadth of the team here â tells us this is an important initiative for Crayola."</em> Then ask each person to share what brought them to the table â their answer reveals priorities and politics.
+      </div>
+    </div>
+
+    <div class="accordion" onclick="toggle(this)">
+      <div class="accordion-header">
+        <span class="accordion-type ask">Ask</span>
+        <span class="accordion-title">Discovery: What's driving the AI conversation now?</span>
+        <span class="accordion-arrow">â¼</span>
+      </div>
+      <div class="accordion-body">
+        Key questions to weave in naturally:<br><br>
+        â¢ <strong>"What prompted the exploration of AI at this point?"</strong> â Surfaces the trigger (board pressure, competitive, organic curiosity).<br>
+        â¢ <strong>"Where are you today â exploring, piloting, or already running something?"</strong> â Calibrates maturity.<br>
+        â¢ <strong>"Is there a specific business problem you're hoping AI solves, or is this more about understanding what's possible?"</strong> â Frames whether they need a specific solution or a strategic partner.<br>
+        â¢ <strong>"What does success look like in 6-12 months?"</strong> â Reveals timeline and urgency.
+      </div>
+    </div>
+
+    <div class="accordion" onclick="toggle(this)">
+      <div class="accordion-header">
+        <span class="accordion-type deep">Deep</span>
+        <span class="accordion-title">Probe: Understand the org dynamics</span>
+        <span class="accordion-arrow">â¼</span>
+      </div>
+      <div class="accordion-body">
+        With six senior people from different functions, the internal dynamics matter as much as the problem statement:<br><br>
+        â¢ Who owns this initiative day-to-day? (Ben organised it, but who runs it?)<br>
+        â¢ Is this a centrally-funded initiative or does each function have its own AI budget?<br>
+        â¢ Has Crayola worked with external AI/tech partners before? What was the experience?<br>
+        â¢ How does this relate to the global IT transformation Arvind is leading?
+      </div>
+    </div>
+
+    <div class="accordion" onclick="toggle(this)">
+      <div class="accordion-header">
+        <span class="accordion-type show">Show</span>
+        <span class="accordion-title">Frame: Conquer's approach â start specific, scale fast</span>
+        <span class="accordion-arrow">â¼</span>
+      </div>
+      <div class="accordion-body">
+        When it's time to share Conquer's perspective, frame around: <em>"We don't do 6-month strategies that sit on a shelf. We find one specific problem, prove AI solves it in weeks, then scale."</em> Position the use case session as the natural next step â not a proposal, not a pitch, but a working session to narrow down where AI creates the most value fastest.
+      </div>
+    </div>
+
+    <div class="accordion" onclick="toggle(this)">
+      <div class="accordion-header">
+        <span class="accordion-type critical">Critical</span>
+        <span class="accordion-title">Close: Secure the next step</span>
+        <span class="accordion-arrow">â¼</span>
+      </div>
+      <div class="accordion-body">
+        Don't leave without a clear next step. The ideal outcome is a <em>discovery session</em> â a deeper working session with a subset of this group to map specific use cases. Suggest: <em>"Based on what we've heard today, we'd love to run a focused use case session with the relevant stakeholders â typically 2 hours, we come prepared with our understanding of your priorities and we map out where AI creates the most immediate value."</em>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ââ WATCH-OUTS ââ -->
+<section class="section" id="watch-outs">
+  <div class="content-wrap">
+    <div class="section-eyebrow">Risk & Awareness</div>
+    <h2 class="section-headline">Watch-Outs</h2>
+    <p class="section-sub">Things to be aware of going in.</p>
+
+    <div class="hook warn">
+      <strong>IT Bandwidth Constraint</strong>
+      <p>Arvind is mid-way through a multi-year global ERP transformation. Any AI initiative that requires significant IT resources may face pushback or timeline friction. Position Conquer's approach as <em>complementary</em> to the transformation, not competing for the same resources.</p>
+    </div>
+
+    <div class="hook danger">
+      <strong>Too Many Cooks</strong>
+      <p>Six senior stakeholders from different functions could mean consensus paralysis. Watch for conflicting priorities during the call. If you sense it, name it: <em>"It sounds like there are several exciting possibilities â a focused use case session would help us prioritise together."</em></p>
+    </div>
+
+    <div class="hook warn">
+      <strong>Brand Sensitivity</strong>
+      <p>Crayola is a children's brand with a 100+ year legacy. Any AI conversation will need to navigate trust, safety, and brand integrity â especially anything consumer-facing or involving kids' data. Be prepared to address responsible AI positioning.</p>
+    </div>
+
+    <div class="hook good">
+      <strong>Strong Signal: CFO Presence</strong>
+      <p>Stephen Hoff (CFO) attending a first exploratory call is unusual and positive. It suggests this has financial sponsorship potential. Make sure to speak his language â ROI, efficiency gains, measurable outcomes â not just innovation possibilities.</p>
+    </div>
+
+    <div class="hook info">
+      <strong>Angel Mendez Framing</strong>
+      <p>Ben Thomas was introduced by Angel Mendez. We don't know exactly how Angel framed Conquer. Early in the call, listen for what expectations have been set â you may need to calibrate.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ââ HISTORY ââ -->
+<section class="section alt" id="history">
+  <div class="content-wrap">
+    <div class="section-eyebrow">Account Timeline</div>
+    <h2 class="section-headline">History</h2>
+    <p class="section-sub">How we got here.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-track"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-date">15 January 2026</div>
+          <div class="tl-title">Introduction via Angel Mendez</div>
+          <div class="tl-body">Angel Mendez introduces Ben Thomas (EVP & CCO, London) to Conquer. Ben described as being "charged with Crayola's AI initiative."</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-track"><div class="tl-dot green"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-date">23 February 2026</div>
+          <div class="tl-title">NDA Signed</div>
+          <div class="tl-body">Conquer AI &amp; Crayola NDA executed. Mutual NDA in place â cleared for confidential discussions.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-track"><div class="tl-dot amber"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-date">9 March 2026</div>
+          <div class="tl-title">Meeting Scheduled</div>
+          <div class="tl-body">First meeting "Conquer AI Ã Crayola" scheduled for 14 April. Full attendee list confirmed â 6 from Crayola, 5 from Conquer.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-track"><div class="tl-dot"></div><div class="tl-line" style="background:transparent;"></div></div>
+        <div class="tl-content">
+          <div class="tl-date">14 April 2026</div>
+          <div class="tl-title">First Meeting â Today</div>
+          <div class="tl-body">Discovery call. 90-minute slot. Objective: understand Crayola's AI ambitions, who owns it, and secure a focused follow-up session.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ââ FOOTER ââ -->
+<section class="section dark">
+  <div class="content-wrap" style="text-align:center;">
+    <div class="section-eyebrow" style="color:var(--brand);">Conquer AI Â· Internal Briefing</div>
+    <p style="color:#666; font-size:13px; margin-top:8px;">Prepared 14 April 2026 Â· First meeting prep Â· Not for external distribution</p>
+  </div>
+</section>
+
+<script>
+function toggle(el) { el.classList.toggle('open'); }
+
+// Active nav tracking
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.topnav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.getAttribute('id'); });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
