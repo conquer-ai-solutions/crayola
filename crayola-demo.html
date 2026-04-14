@@ -1,425 +1,659 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crayola Ã Conquer AI</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crayola — Innovation-to-Market AI · Indicative Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root {
+  --bg: #F5F5F7;
+  --card: #FFFFFF;
+  --border: rgba(0,0,0,0.07);
+  --border-light: rgba(0,0,0,0.04);
+  --text: #1D1D1F;
+  --text-secondary: #424245;
+  --text-dim: #6E6E73;
+  --text-muted: #86868B;
+  --brand: #1EB253;
+  --brand-dark: #178C42;
+  --brand-light: rgba(30,178,83,0.08);
+  --brand-mid: rgba(30,178,83,0.15);
+  --green: #10B981;
+  --green-bg: rgba(16,185,129,0.08);
+  --amber: #F59E0B;
+  --amber-bg: rgba(245,158,11,0.08);
+  --red: #EF4444;
+  --red-bg: rgba(239,68,68,0.08);
+  --blue: #3B82F6;
+  --blue-bg: rgba(59,130,246,0.08);
+  --purple: #8B5CF6;
+  --purple-bg: rgba(139,92,246,0.08);
+  --orange: #F97316;
+  --orange-bg: rgba(249,115,22,0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.06), 0 4px 6px -4px rgba(0,0,0,0.04);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --font: 'Inter', -apple-system, sans-serif;
+}
+html{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{min-height:100vh}
 
-    :root {
-      --crayola: #1E3A5F;
-      --crayola-lt: #2B5A8F;
-      --conquer: #E63329;
-      --conquer-dk: #B52820;
-      --green: #059669;
-      --amber: #D97706;
-      --purple: #7C3AED;
-      --teal: #0D9488;
-      --text-1: #111111;
-      --text-2: #555555;
-      --text-3: #888888;
-      --border: #E5E5E5;
-      --bg-alt: #F7F7F6;
-      --bg-dark: #0D0D0D;
-    }
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:56px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;letter-spacing:-0.5px}
+.logo-icon{width:32px;height:32px;background:var(--brand);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:800}
+.logo span{color:var(--brand)}
+.nav-tabs{display:flex;gap:2px;background:var(--bg);border-radius:var(--radius-sm);padding:3px}
+.nav-tab{padding:7px 16px;border-radius:6px;font-size:13px;font-weight:500;color:var(--text-dim);cursor:pointer;transition:all 0.15s;border:none;background:none;font-family:var(--font)}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{background:var(--card);color:var(--text);font-weight:600;box-shadow:var(--shadow-sm)}
+.header-right{display:flex;align-items:center;gap:14px}
+.badge{background:var(--brand);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.3px}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-dark));display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700}
 
-    html { scroll-behavior: smooth; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; color: var(--text-1); line-height: 1.7; font-size: 16px; background: #fff; }
+/* LAYOUT */
+.app{display:flex;flex-direction:column;height:100vh}
+.main{flex:1;overflow-y:auto;padding:24px 28px}
 
-    /* ââ NAV ââ */
-    nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); height: 52px; display: flex; align-items: center; padding: 0 40px; gap: 0; }
-    .nav-brand { display: flex; align-items: center; gap: 8px; margin-right: 24px; flex-shrink: 0; }
-    .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--conquer); }
-    .nav-label { font-size: 13px; font-weight: 700; color: var(--text-1); letter-spacing: -0.01em; }
-    .nav-divider { width: 1px; height: 22px; background: var(--border); margin: 0 16px; flex-shrink: 0; }
-    .nav-links { display: flex; align-items: center; gap: 0; flex: 1; overflow-x: auto; scrollbar-width: none; }
-    .nav-links::-webkit-scrollbar { display: none; }
-    .nav-links a { font-size: 13px; font-weight: 500; color: var(--text-3); text-decoration: none; padding: 0 14px; height: 52px; display: flex; align-items: center; border-bottom: 2px solid transparent; white-space: nowrap; transition: .15s; }
-    .nav-links a:hover { color: var(--text-1); }
-    .nav-links a.active { color: var(--text-1); border-bottom-color: var(--conquer); font-weight: 600; }
-    .nav-tag { margin-left: auto; flex-shrink: 0; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); border: 1px solid var(--border); border-radius: 4px; padding: 3px 10px; font-family: 'Courier New', monospace; }
+/* COVER / OVERVIEW */
+.cover{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;margin-bottom:40px}
+.cover-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand);margin-bottom:16px}
+.cover-title{font-size:44px;font-weight:800;letter-spacing:-1.5px;line-height:1.08;margin-bottom:16px}
+.cover-title span{color:var(--brand)}
+.cover-sub{font-size:16px;color:var(--text-dim);line-height:1.65;margin-bottom:32px}
+.cover-stats{display:flex;gap:32px}
+.stat-val{font-size:30px;font-weight:800;letter-spacing:-1px;color:var(--brand)}
+.stat-lbl{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:3px;font-weight:500}
+.cover-visual{width:100%;aspect-ratio:1.3;background:linear-gradient(135deg,#ECFDF5,#F0FDF4,#ECFDF5);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:var(--shadow-lg)}
+.cover-features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cover-feature{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all 0.2s}
+.cover-feature:hover{border-color:var(--brand);box-shadow:var(--shadow-md)}
+.cf-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+.cf-title{font-size:13px;font-weight:700;margin-bottom:4px}
+.cf-desc{font-size:12px;color:var(--text-dim);line-height:1.5}
 
-    /* ââ LAYOUT ââ */
-    .wrap { max-width: 960px; margin: 0 auto; padding: 0 40px; }
-    .section { padding: 72px 0 80px; border-bottom: 1px solid var(--border); }
-    .section.alt { background: var(--bg-alt); }
-    .section.dark { background: var(--bg-dark); color: #fff; border-bottom-color: #222; }
-    .section.hero-section { border-bottom: none; }
-    .eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--teal); margin-bottom: 12px; font-family: 'Courier New', monospace; }
-    .section.dark .eyebrow { color: #6EE7B7; }
-    h1, h2 { font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-    h1 { font-size: 56px; margin-bottom: 16px; }
-    h2 { font-size: 40px; margin-bottom: 12px; color: var(--text-1); }
-    .section.dark h2 { color: #fff; }
-    .subtitle { font-size: 18px; color: var(--text-2); margin-bottom: 40px; max-width: 640px; }
-    .section.dark .subtitle { color: rgba(255,255,255,0.5); }
+/* FLOW DIAGRAM */
+.flow-section{margin-bottom:40px}
+.flow-title{font-size:20px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px}
+.flow-sub{font-size:13px;color:var(--text-dim);margin-bottom:24px}
+.flow-track{display:flex;align-items:center;gap:0;overflow-x:auto;padding:8px 0}
+.flow-node{flex-shrink:0;background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:16px 20px;min-width:160px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative}
+.flow-node:hover,.flow-node.active{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-light)}
+.flow-node.active{background:var(--brand-light)}
+.flow-node .fn-icon{font-size:22px;margin-bottom:6px}
+.flow-node .fn-label{font-size:12px;font-weight:700;letter-spacing:-0.2px}
+.flow-node .fn-sub{font-size:10px;color:var(--text-muted);margin-top:2px}
+.flow-arrow{flex-shrink:0;width:32px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:16px}
+.flow-node.done{border-color:var(--green)}
+.flow-node.done::after{content:'✓';position:absolute;top:-8px;right:-8px;width:20px;height:20px;background:var(--green);color:white;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700}
 
-    /* ââ HERO ââ */
-    .hero-section { padding: 80px 0 56px; background: linear-gradient(180deg, #fff 0%, var(--bg-alt) 100%); }
-    .hero-collab { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
-    .hero-collab-name { font-size: 15px; font-weight: 700; color: var(--text-1); }
-    .hero-collab-dot { font-size: 24px; color: var(--text-3); line-height: 1; }
-    .hero-collab-logo { display: flex; align-items: center; gap: 6px; }
-    .hero-collab-logo .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--conquer); }
-    h1 span.accent { color: var(--conquer); }
-    .hero-meta { display: flex; gap: 32px; margin-top: 32px; flex-wrap: wrap; }
-    .hero-meta-item { font-size: 13px; color: var(--text-3); }
-    .hero-meta-item strong { display: block; color: var(--text-1); font-size: 14px; font-weight: 600; }
+/* CARDS GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:32px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all 0.2s;cursor:pointer}
+.card:hover{border-color:var(--brand);box-shadow:var(--shadow-md)}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.card-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:0.3px}
+.card-title{font-size:14px;font-weight:700;margin-bottom:4px;letter-spacing:-0.2px}
+.card-desc{font-size:12px;color:var(--text-dim);line-height:1.55}
+.card-meta{display:flex;gap:16px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border-light)}
+.card-meta span{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:4px}
 
-    /* ââ STAT STRIP ââ */
-    .stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 0 0 48px; }
-    .stat-cell { padding: 24px 20px; border-right: 1px solid var(--border); text-align: center; background: #fff; }
-    .stat-cell:last-child { border-right: none; }
-    .stat-num { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; color: var(--text-1); font-family: 'Courier New', monospace; }
-    .stat-num.brand { color: var(--conquer); }
-    .stat-num.green { color: var(--green); }
-    .stat-num.amber { color: var(--amber); }
-    .stat-lbl { font-size: 11px; color: var(--text-3); font-weight: 500; margin-top: 4px; text-transform: uppercase; letter-spacing: .06em; }
+/* DETAIL PANEL */
+.detail-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:32px}
+.dp-header{padding:24px;border-bottom:1px solid var(--border)}
+.dp-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--brand);margin-bottom:8px}
+.dp-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px}
+.dp-subtitle{font-size:13px;color:var(--text-dim)}
+.dp-body{padding:24px}
+.dp-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 24px}
+.dp-tab{padding:12px 18px;font-size:13px;font-weight:500;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font)}
+.dp-tab:hover{color:var(--text)}
+.dp-tab.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
 
-    /* ââ CARDS ââ */
-    .card { border: 1px solid var(--border); border-radius: 8px; padding: 28px 32px; margin-bottom: 16px; background: #fff; }
-    .card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 12px; font-family: 'Courier New', monospace; }
-    .card-label.teal { color: var(--teal); }
-    .card-label.brand { color: var(--conquer); }
-    .card-label.green { color: var(--green); }
-    .card-label.purple { color: var(--purple); }
-    .card-label.amber { color: var(--amber); }
-    .card p { font-size: 15px; color: var(--text-2); line-height: 1.75; }
-    .card p em { font-style: normal; color: var(--text-1); font-weight: 600; }
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;font-size:13px}
+.data-table th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);border-bottom:1px solid var(--border);background:#FAFAFA}
+.data-table td{padding:12px 14px;border-bottom:1px solid var(--border-light);vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:#FAFAFA}
+.field-name{font-weight:600;color:var(--text)}
+.field-val{color:var(--text-secondary);font-family:'Courier New',monospace;font-size:12px}
+.confidence{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600}
+.conf-high{color:var(--green)}
+.conf-med{color:var(--amber)}
+.conf-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
-    /* ââ PEOPLE ââ */
-    .people-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 32px 0; }
-    .person { border: 1px solid var(--border); border-radius: 8px; padding: 20px; background: #fff; }
-    .person-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #fff; margin-bottom: 12px; }
-    .person-name { font-weight: 700; font-size: 15px; color: var(--text-1); }
-    .person-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
-    .person-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+/* PIPELINE */
+.pipeline-cols{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.pipe-col{background:var(--bg);border-radius:var(--radius);padding:12px}
+.pipe-col-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+.pipe-col-title{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-dim)}
+.pipe-count{font-size:10px;font-weight:700;background:var(--brand-light);color:var(--brand);padding:2px 6px;border-radius:4px}
+.pipe-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;cursor:pointer;transition:all 0.15s}
+.pipe-card:hover{border-color:var(--brand);box-shadow:var(--shadow-sm)}
+.pipe-card-title{font-size:12px;font-weight:600;margin-bottom:4px}
+.pipe-card-meta{font-size:10px;color:var(--text-muted)}
+.pipe-card-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:6px;letter-spacing:0.3px}
 
-    /* ââ OPPORTUNITY GRID ââ */
-    .opp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 32px 0; }
-    .opp { border: 1px solid var(--border); border-radius: 8px; padding: 28px; background: #fff; transition: border-color .15s; }
-    .opp:hover { border-color: #ccc; }
-    .opp.featured { border: 2px solid var(--conquer); }
-    .opp-num { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--conquer); font-family: 'Courier New', monospace; margin-bottom: 8px; }
-    .opp-title { font-weight: 700; font-size: 17px; margin-bottom: 8px; color: var(--text-1); }
-    .opp-body { font-size: 14px; color: var(--text-2); line-height: 1.65; }
+/* ASK AI PANEL */
+.ai-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);display:flex;flex-direction:column;height:calc(100vh - 104px)}
+.ai-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.ai-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));display:flex;align-items:center;justify-content:center;color:white;font-size:16px}
+.ai-header-text h3{font-size:15px;font-weight:700;letter-spacing:-0.3px}
+.ai-header-text p{font-size:11px;color:var(--text-muted)}
+.ai-messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+.ai-msg{max-width:80%;padding:12px 16px;border-radius:var(--radius);font-size:13px;line-height:1.6}
+.ai-msg.bot{background:var(--bg);align-self:flex-start;border-bottom-left-radius:4px}
+.ai-msg.user{background:var(--brand);color:white;align-self:flex-end;border-bottom-right-radius:4px}
+.ai-msg h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.ai-msg ul{margin:6px 0;padding-left:18px}
+.ai-msg li{margin-bottom:4px;font-size:12px}
+.ai-chips{display:flex;flex-wrap:wrap;gap:8px;padding:12px 24px;border-top:1px solid var(--border-light)}
+.chip{padding:6px 14px;border:1px solid var(--border);border-radius:20px;font-size:12px;color:var(--text-secondary);cursor:pointer;background:white;font-family:var(--font);transition:all 0.15s}
+.chip:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-light)}
+.ai-input-row{display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--border);flex-shrink:0;background:white}
+.ai-input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font);color:var(--text);outline:none;transition:border-color 0.15s}
+.ai-input:focus{border-color:var(--brand)}
+.send-btn{padding:10px 20px;background:var(--brand);color:white;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;transition:background 0.15s}
+.send-btn:hover{background:var(--brand-dark)}
 
-    /* ââ APPROACH ââ */
-    .approach-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 32px 0; }
-    .approach-step { border: 1px solid var(--border); border-radius: 8px; padding: 28px 24px; background: #fff; text-align: center; }
-    .approach-icon { font-size: 36px; margin-bottom: 16px; }
-    .approach-num { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--conquer); font-family: 'Courier New', monospace; margin-bottom: 8px; }
-    .approach-title { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
-    .approach-desc { font-size: 14px; color: var(--text-2); line-height: 1.6; }
+/* INBOX */
+.inbox-layout{display:grid;grid-template-columns:380px 1fr;gap:0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;height:calc(100vh - 104px)}
+.inbox-list{border-right:1px solid var(--border);overflow-y:auto}
+.inbox-list-header{padding:16px 20px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.inbox-item{padding:14px 20px;border-bottom:1px solid var(--border-light);cursor:pointer;transition:background 0.1s}
+.inbox-item:hover{background:var(--bg)}
+.inbox-item.active{background:var(--brand-light);border-left:3px solid var(--brand)}
+.inbox-item-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.inbox-item-sub{font-size:11px;color:var(--text-muted)}
+.inbox-item-meta{display:flex;justify-content:space-between;margin-top:6px}
+.inbox-item-tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:0.3px}
+.inbox-item-time{font-size:10px;color:var(--text-muted)}
+.inbox-detail{overflow-y:auto;padding:0}
+.inbox-detail-header{padding:24px;border-bottom:1px solid var(--border)}
+.inbox-detail-body{padding:24px}
 
-    /* ââ BEFORE/AFTER ââ */
-    .shift-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; margin: 32px 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .shift-col { padding: 32px 28px; }
-    .shift-col.before { background: #FAFAFA; }
-    .shift-col.after { background: #F0FDF4; }
-    .shift-arrow { display: flex; align-items: center; justify-content: center; width: 48px; background: var(--bg-alt); font-size: 20px; color: var(--text-3); }
-    .shift-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; font-family: 'Courier New', monospace; margin-bottom: 16px; }
-    .shift-label.before-label { color: var(--amber); }
-    .shift-label.after-label { color: var(--green); }
-    .shift-item { font-size: 14px; color: var(--text-2); padding: 8px 0; border-bottom: 1px solid var(--border); line-height: 1.6; }
-    .shift-item:last-child { border-bottom: none; }
-    .shift-item strong { color: var(--text-1); }
+/* SECTION HEADERS */
+.section-header{margin-bottom:20px}
+.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand);margin-bottom:6px}
+.section-title{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+.section-subtitle{font-size:13px;color:var(--text-dim);margin-top:4px}
 
-    /* ââ NEXT STEPS ââ */
-    .next-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 32px 0; }
-    .next-step { border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 28px 24px; background: rgba(255,255,255,0.04); }
-    .next-num { font-size: 28px; font-weight: 800; color: var(--conquer); font-family: 'Courier New', monospace; margin-bottom: 12px; }
-    .next-title { font-weight: 700; font-size: 16px; color: #fff; margin-bottom: 8px; }
-    .next-desc { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+/* STAT STRIP */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;text-align:center}
+.stat-card .sc-val{font-size:28px;font-weight:800;letter-spacing:-1px;color:var(--brand)}
+.stat-card .sc-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;font-weight:500}
 
-    /* ââ FOOTER ââ */
-    footer { padding: 48px 40px; text-align: center; background: var(--bg-dark); color: #fff; }
-    footer .footer-brand { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; }
-    footer .footer-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--conquer); }
-    footer .footer-name { font-size: 15px; font-weight: 700; }
-    footer .footer-sub { font-size: 13px; color: rgba(255,255,255,0.35); }
+/* WARN BOX */
+.warn-box{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius);padding:16px 20px;font-size:12px;color:#92400E;line-height:1.6;margin:20px 0}
+.warn-box strong{font-weight:700}
 
-    /* ââ RESPONSIVE ââ */
-    @media (max-width: 700px) {
-      h1 { font-size: 36px; }
-      h2 { font-size: 28px; }
-      .stat-strip { grid-template-columns: repeat(2, 1fr); }
-      .people-grid { grid-template-columns: 1fr; }
-      .opp-grid { grid-template-columns: 1fr; }
-      .approach-grid { grid-template-columns: 1fr; }
-      .shift-grid { grid-template-columns: 1fr; }
-      .shift-arrow { width: 100%; height: 40px; }
-      .next-steps { grid-template-columns: 1fr; }
-      nav { padding: 0 20px; }
-      .wrap { padding: 0 20px; }
-    }
-  </style>
+/* BEFORE/AFTER */
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:32px}
+.ba-col{padding:28px}
+.ba-col.before{background:#FFF5F5}
+.ba-col.after{background:#ECFDF5}
+.ba-col h3{font-size:15px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.ba-col ul{list-style:none;padding:0}
+.ba-col li{padding:8px 0;font-size:13px;color:var(--text-secondary);display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.ba-col li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:6px}
+.ba-col.before li::before{background:var(--red)}
+.ba-col.after li::before{background:var(--green)}
+
+/* ANIMATIONS */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn 0.3s ease-out}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .cover{grid-template-columns:1fr}
+  .cover-visual{display:none}
+  .pipeline-cols{grid-template-columns:1fr 1fr}
+  .inbox-layout{grid-template-columns:1fr}
+  .stat-strip{grid-template-columns:repeat(2,1fr)}
+  .ba-grid{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
-
-<!-- ââ NAV ââ -->
-<nav>
-  <div class="nav-brand">
-    <div class="nav-dot"></div>
-    <span class="nav-label">Conquer AI</span>
-  </div>
-  <div class="nav-divider"></div>
-  <div class="nav-links">
-    <a href="#top" class="active">Overview</a>
-    <a href="#landscape">Your Landscape</a>
-    <a href="#opportunities">Where AI Lands</a>
-    <a href="#approach">How We Work</a>
-    <a href="#shift">The Shift</a>
-    <a href="#next">Next Steps</a>
-  </div>
-  <span class="nav-tag">14 Apr 2026</span>
-</nav>
-
-<!-- ââ HERO ââ -->
-<section class="section hero-section" id="top">
-  <div class="wrap">
-    <div class="hero-collab">
-      <span class="hero-collab-name">Crayola</span>
-      <span class="hero-collab-dot">&times;</span>
-      <div class="hero-collab-logo">
-        <div class="dot" style="width:6px;height:6px;border-radius:50%;background:var(--conquer);"></div>
-        <span style="font-size:14px;font-weight:700;">Conquer AI</span>
-      </div>
-    </div>
-    <h1>Creativity meets <span class="accent">intelligence.</span></h1>
-    <p class="subtitle">Exploring how AI can accelerate Crayola's next chapter â from consumer experience to global operations to the future of creative play.</p>
-    <div class="hero-meta">
-      <div class="hero-meta-item"><strong>Discovery Session</strong>14 April 2026 &middot; 6:30 PM</div>
-      <div class="hero-meta-item"><strong>Format</strong>Video call &middot; 90 minutes</div>
-      <div class="hero-meta-item"><strong>Objective</strong>Understand priorities, map opportunities</div>
-    </div>
-  </div>
-</section>
-
-<!-- ââ STAT STRIP ââ -->
-<section class="section alt" id="landscape">
-  <div class="wrap">
-    <div class="stat-strip">
-      <div class="stat-cell"><div class="stat-num">100+</div><div class="stat-lbl">Year Legacy</div></div>
-      <div class="stat-cell"><div class="stat-num green">3B</div><div class="stat-lbl">Crayons / Year</div></div>
-      <div class="stat-cell"><div class="stat-num amber">80+</div><div class="stat-lbl">Countries</div></div>
-      <div class="stat-cell"><div class="stat-num brand">~900</div><div class="stat-lbl">Employees</div></div>
-    </div>
-
-    <div class="eyebrow">Your Landscape</div>
-    <h2>What we see in Crayola's world</h2>
-    <p class="subtitle">A creativity brand at an inflection point â repositioning for the digital age while scaling globally.</p>
-
-    <div class="card">
-      <div class="card-label brand">Campaign for Creativity</div>
-      <p>Crayola is moving from "art supplies company" to <em>creativity-as-life-skill brand</em>. That repositioning touches everything â product innovation, digital experiences, and how you connect with a generation of kids who are digital-native. AI doesn't replace creativity â it amplifies it.</p>
-    </div>
-
-    <div class="card">
-      <div class="card-label teal">Global Transformation</div>
-      <p>A multi-year initiative to standardise technology and business processes across all regions. Centralised ERP, unified data foundations, consistent operations. This creates the <em>infrastructure layer</em> that makes AI possible at enterprise scale â clean data, connected systems, a single source of truth.</p>
-    </div>
-
-    <div class="card">
-      <div class="card-label green">Automation Heritage</div>
-      <p>Crayola bet on automation when others were offshoring â investing in Lean Six Sigma and high-speed production lines that now produce 3 billion crayons a year. That decision saved millions and built a culture that <em>understands operational technology investment</em>. AI is the next chapter in that story.</p>
-    </div>
-
-    <div class="card">
-      <div class="card-label purple">Global Expansion</div>
-      <p>Crayola Experience venues moving into new international markets. New product innovations like Story Creator blending physical and digital play. Entertainment programming expanding. Every new market, every new format adds <em>complexity that AI can help manage</em> â localisation, consumer insights, supply chain coordination.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ââ PEOPLE ââ -->
-<section class="section">
-  <div class="wrap">
-    <div class="eyebrow">Today's Conversation</div>
-    <h2>The team in the room</h2>
-    <p class="subtitle">A cross-functional group spanning commercial, finance, technology, consumer experience, eCommerce, and marketing.</p>
-
-    <div class="people-grid">
-      <div class="person">
-        <div class="person-avatar" style="background:var(--conquer);">BT</div>
-        <div class="person-name">Ben Thomas</div>
-        <div class="person-title" style="color:var(--conquer);">EVP & Chief Commercial Officer</div>
-        <div class="person-desc">Leading Crayola's AI exploration from the commercial side. Based in London.</div>
-      </div>
-      <div class="person">
-        <div class="person-avatar" style="background:var(--amber);">SH</div>
-        <div class="person-name">Stephen Hoff</div>
-        <div class="person-title" style="color:var(--amber);">EVP & CFO</div>
-        <div class="person-desc">Financial strategy and investment. McKinsey background. With Crayola since 2016.</div>
-      </div>
-      <div class="person">
-        <div class="person-avatar" style="background:var(--purple);">RS</div>
-        <div class="person-name">Richard Stringer</div>
-        <div class="person-title" style="color:var(--purple);">EVP, Consumer Experience</div>
-        <div class="person-desc">Oversees Crayola Experience venues and consumer-facing product strategy.</div>
-      </div>
-      <div class="person">
-        <div class="person-avatar" style="background:var(--teal);">AS</div>
-        <div class="person-name">Arvind Sahu</div>
-        <div class="person-title" style="color:var(--teal);">VP Global IT / CIO</div>
-        <div class="person-desc">Leading the global technology transformation. ORBIE Award winner 2025.</div>
-      </div>
-      <div class="person">
-        <div class="person-avatar" style="background:var(--green);">NQ</div>
-        <div class="person-name">Niall Quinn</div>
-        <div class="person-title" style="color:var(--green);">VP, Global eCommerce</div>
-        <div class="person-desc">Owns digital commerce â D2C, online experience, and personalisation.</div>
-      </div>
-      <div class="person">
-        <div class="person-avatar" style="background:#D97706;">CS</div>
-        <div class="person-name">Craig Skinner</div>
-        <div class="person-title" style="color:var(--amber);">VP, Platform Marketing</div>
-        <div class="person-desc">Innovation, design R&D, and marketing. Named on Crayola patents.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ââ OPPORTUNITIES ââ -->
-<section class="section alt" id="opportunities">
-  <div class="wrap">
-    <div class="eyebrow">Opportunity Mapping</div>
-    <h2>Where AI could create value</h2>
-    <p class="subtitle">Initial hypotheses based on your business context. Today's conversation will help us sharpen these together.</p>
-
-    <div class="opp-grid">
-      <div class="opp featured">
-        <div class="opp-num">Opportunity 01</div>
-        <div class="opp-title">Consumer Experience & Personalisation</div>
-        <div class="opp-body">AI-powered personalised creative experiences â both digital (D2C, apps, eCommerce) and physical (Crayola Experience venues). Personalised product recommendations, dynamic venue experiences, AI-assisted creative tools for kids.</div>
-      </div>
-      <div class="opp">
-        <div class="opp-num">Opportunity 02</div>
-        <div class="opp-title">Global Commercial Intelligence</div>
-        <div class="opp-body">Unified market intelligence across regions. Demand forecasting, pricing optimisation, and competitive analysis â especially as you expand into new markets internationally.</div>
-      </div>
-      <div class="opp">
-        <div class="opp-num">Opportunity 03</div>
-        <div class="opp-title">Marketing & Brand at Scale</div>
-        <div class="opp-body">Content generation, localisation workflows, and campaign analytics across regions. The Campaign for Creativity needs to scale globally â AI makes that feasible without proportional headcount growth.</div>
-      </div>
-      <div class="opp">
-        <div class="opp-num">Opportunity 04</div>
-        <div class="opp-title">Operational Efficiency</div>
-        <div class="opp-body">AI-augmented supply chain planning, demand forecasting, and production optimisation â building on Crayola's existing automation heritage with an intelligence layer on top.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ââ APPROACH ââ -->
-<section class="section" id="approach">
-  <div class="wrap">
-    <div class="eyebrow">How Conquer Works</div>
-    <h2>Start specific. Prove value. Scale fast.</h2>
-    <p class="subtitle">We don't write strategies that sit on shelves. We find one problem, prove AI solves it in weeks, then expand.</p>
-
-    <div class="approach-grid">
-      <div class="approach-step">
-        <div class="approach-icon">&#x1F3AF;</div>
-        <div class="approach-num">Week 1â2</div>
-        <div class="approach-title">Discovery & Use Case Mapping</div>
-        <div class="approach-desc">Deep-dive into your operations. Identify the highest-value AI opportunity with the clearest path to measurable impact.</div>
-      </div>
-      <div class="approach-step">
-        <div class="approach-icon">&#x26A1;</div>
-        <div class="approach-num">Week 3â6</div>
-        <div class="approach-title">Build & Prove</div>
-        <div class="approach-desc">Working AI solution against a real problem. Not a PowerPoint â a functioning system your team can use and evaluate.</div>
-      </div>
-      <div class="approach-step">
-        <div class="approach-icon">&#x1F680;</div>
-        <div class="approach-num">Week 7+</div>
-        <div class="approach-title">Scale & Expand</div>
-        <div class="approach-desc">Proven solution becomes the foundation. Expand to adjacent use cases, functions, and regions â with confidence because it already works.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ââ THE SHIFT ââ -->
-<section class="section alt" id="shift">
-  <div class="wrap">
-    <div class="eyebrow">The Transformation</div>
-    <h2>What changes</h2>
-    <p class="subtitle">The shift AI creates â moving from manual effort and fragmented insight to intelligent, scalable operations.</p>
-
-    <div class="shift-grid">
-      <div class="shift-col before">
-        <div class="shift-label before-label">Today</div>
-        <div class="shift-item"><strong>Manual insight gathering</strong> across disconnected regional data</div>
-        <div class="shift-item"><strong>One-size-fits-all</strong> consumer experiences across channels</div>
-        <div class="shift-item"><strong>Campaign localisation</strong> requires proportional team scaling</div>
-        <div class="shift-item"><strong>Reactive decision-making</strong> based on lagging indicators</div>
-      </div>
-      <div class="shift-arrow">&rarr;</div>
-      <div class="shift-col after">
-        <div class="shift-label after-label">With AI</div>
-        <div class="shift-item"><strong>Unified intelligence layer</strong> with real-time commercial visibility</div>
-        <div class="shift-item"><strong>Personalised experiences</strong> that adapt to each consumer</div>
-        <div class="shift-item"><strong>AI-powered localisation</strong> that scales without linear headcount</div>
-        <div class="shift-item"><strong>Predictive operations</strong> that anticipate and act proactively</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ââ NEXT STEPS ââ -->
-<section class="section dark" id="next">
-  <div class="wrap">
-    <div class="eyebrow">What Happens Next</div>
-    <h2>From conversation to clarity</h2>
-    <p class="subtitle">Today is about understanding. Here's how we turn that understanding into action.</p>
-
-    <div class="next-steps">
-      <div class="next-step">
-        <div class="next-num">01</div>
-        <div class="next-title">Today: Listen & Learn</div>
-        <div class="next-desc">Understand your priorities, challenges, and what success looks like. We're here to ask good questions, not pitch solutions.</div>
-      </div>
-      <div class="next-step">
-        <div class="next-num">02</div>
-        <div class="next-title">Next: Use Case Session</div>
-        <div class="next-desc">A focused 2-hour working session where we map specific AI opportunities against your priorities and score them by impact and feasibility.</div>
-      </div>
-      <div class="next-step">
-        <div class="next-num">03</div>
-        <div class="next-title">Then: Prove It Works</div>
-        <div class="next-desc">Build a working AI solution against your #1 use case. Real data, real results, real evaluation â in weeks, not months.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ââ FOOTER ââ -->
-<footer>
-  <div class="footer-brand">
-    <div class="footer-dot"></div>
-    <span class="footer-name">Conquer AI</span>
-  </div>
-  <div class="footer-sub">conquer.ai &middot; Discovery session &middot; April 2026</div>
-</footer>
-
+<div id="root"></div>
 <script>
-// Active nav tracking
-const sections = document.querySelectorAll('section[id]');
-const navLinks = document.querySelectorAll('nav .nav-links a');
-window.addEventListener('scroll', () => {
-  let current = '';
-  sections.forEach(s => {
-    if (window.scrollY >= s.offsetTop - 80) current = s.getAttribute('id');
-  });
-  navLinks.forEach(a => {
-    a.classList.remove('active');
-    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
-  });
-});
+(function(){
+  // ── MINI REACT ──
+  let _state={}, _id=0, _root, _app;
+  function useState(init){
+    const id=_id++;
+    if(!(id in _state)) _state[id]=init;
+    const setS=v=>{_state[id]=typeof v==='function'?v(_state[id]):v;_id=0;render()};
+    return[_state[id],setS];
+  }
+  function h(tag,props,...ch){
+    if(typeof tag==='function') return tag(props||{});
+    const el=document.createElement(tag);
+    if(props) Object.entries(props).forEach(([k,v])=>{
+      if(k==='className') el.className=v;
+      else if(k==='style'&&typeof v==='object') Object.assign(el.style,v);
+      else if(k.startsWith('on')) el.addEventListener(k.slice(2).toLowerCase(),v);
+      else if(k==='innerHTML') el.innerHTML=v;
+      else el.setAttribute(k,v);
+    });
+    ch.flat(Infinity).forEach(c=>{
+      if(c==null||c===false) return;
+      el.appendChild(typeof c==='object'?c:document.createTextNode(String(c)));
+    });
+    return el;
+  }
+  function render(){_id=0;const r=_app();_root.innerHTML='';_root.appendChild(r)}
+
+  // ── DATA ──
+  const insights = [
+    {id:1, title:'Consumer AI Sentiment \u2014 Parents 3-12', category:'Research', status:'New', time:'2h ago', priority:'high',
+     summary:'AI-moderated study of 108 parents shows Crayola is preferred 4x over tech giants for kid-facing AI. Trust advantage is significant \u2014 parents value safety, nostalgia, and child-first values.',
+     fields:[
+       {name:'Sample Size',val:'108 parents, children ages 3-12',conf:'high'},
+       {name:'Trust Preference',val:'4x over tech competitors',conf:'high'},
+       {name:'Top Concern',val:'AI replacing creativity, not sparking it',conf:'high'},
+       {name:'Key Insight',val:'Parents value the process, not the product',conf:'high'},
+       {name:'Age Sensitivity',val:'6-8 most sensitive to "AI replacing creativity"',conf:'med'},
+       {name:'Source',val:'Suzy Speaks + Listen Labs AI Moderated Research',conf:'high'}
+     ]},
+    {id:2, title:'Packaging Design Automation \u2014 Washable Markers Line', category:'Design', status:'In Review', time:'5h ago', priority:'med',
+     summary:'AI-generated packaging variants for Ultra-Clean Washable Markers across 3 brand lines. 12 variants produced in 4 minutes vs. typical 3-week agency cycle. Awaiting brand team approval.',
+     fields:[
+       {name:'Product Line',val:'Ultra-Clean Washable Markers, 10ct',conf:'high'},
+       {name:'Variants Generated',val:'12 packaging concepts',conf:'high'},
+       {name:'Time to Generate',val:'4 minutes',conf:'high'},
+       {name:'Traditional Timeline',val:'3 weeks (agency)',conf:'med'},
+       {name:'Brand Compliance',val:'92% match to guidelines',conf:'high'},
+       {name:'Cost Reduction',val:'~60% per packaging cycle',conf:'med'}
+     ]},
+    {id:3, title:'Patent Landscape \u2014 Ultra-Clean Paint Innovation', category:'R&D', status:'Flagged', time:'1d ago', priority:'high',
+     summary:'Eureka patent intelligence scan identified 3 adjacent patents in washable marker technology. One overlaps with Ultra-Clean Paint Innovation. Early awareness enables proactive IP strategy.',
+     fields:[
+       {name:'Platform',val:'Eureka by Patsnap \u2014 Cloud Patent Intelligence',conf:'high'},
+       {name:'Adjacent Patents Found',val:'3 (1 high relevance)',conf:'high'},
+       {name:'Overlap Area',val:'Washable pigment micro-encapsulation',conf:'med'},
+       {name:'Risk Level',val:'Medium \u2014 pre-filing stage',conf:'med'},
+       {name:'Recommendation',val:'File provisional patent within 90 days',conf:'high'},
+       {name:'Competitive Intel',val:'2 competitors expanding in segment',conf:'med'}
+     ]},
+    {id:4, title:'GEO Optimization \u2014 Crayola on ChatGPT & Gemini', category:'Search', status:'New', time:'3h ago', priority:'med',
+     summary:'Generative Experience Optimization audit shows Crayola appears in 34% of relevant AI-generated answers for creative kids activities. Opportunity to increase to 70%+ with structured content strategy.',
+     fields:[
+       {name:'Current AI Visibility',val:'34% of relevant queries',conf:'high'},
+       {name:'Target Visibility',val:'70%+ within 6 months',conf:'med'},
+       {name:'Platforms Audited',val:'ChatGPT, Gemini, Perplexity',conf:'high'},
+       {name:'Top Gap',val:'Age-specific craft recommendations',conf:'high'},
+       {name:'Content Needed',val:'250+ structured activity guides',conf:'med'},
+       {name:'Estimated Traffic Impact',val:'+180% organic AI referrals',conf:'med'}
+     ]}
+  ];
+
+  const pipelineData = {
+    'Discovery':[
+      {title:'Creativity Companion Robot',tag:'Platform X',tagColor:'var(--purple)',tagBg:'var(--purple-bg)',meta:'Stage 1 \u2014 Explore'},
+      {title:'AI Drawing Coach',tag:'Consumer',tagColor:'var(--blue)',tagBg:'var(--blue-bg)',meta:'Age 6-8 focus'}
+    ],
+    'Ideation':[
+      {title:'Color Spell Magic Alchemy Kit',tag:'NPD',tagColor:'var(--brand)',tagBg:'var(--brand-light)',meta:'Product Development'},
+      {title:'Personalized Coloring Books',tag:'GenAI',tagColor:'var(--orange)',tagBg:'var(--orange-bg)',meta:'On-demand printing'}
+    ],
+    'Validation':[
+      {title:'Smart Label \u2014 Interactive Packaging',tag:'R&D',tagColor:'var(--amber)',tagBg:'var(--amber-bg)',meta:'Prototype Q3'},
+      {title:'Retailer AI Data Partnership',tag:'Partnership',tagColor:'var(--purple)',tagBg:'var(--purple-bg)',meta:'Amazon Rufus / Walmart Sparky'}
+    ],
+    'Build':[
+      {title:'Automated Merch Design Engine',tag:'Efficiency',tagColor:'var(--green)',tagBg:'var(--green-bg)',meta:'10% SG&A target'},
+      {title:'Product Content Generator',tag:'GenAI',tagColor:'var(--orange)',tagBg:'var(--orange-bg)',meta:'Copy + imagery pipeline'}
+    ],
+    'Launch':[
+      {title:'Human Knowledge Studio',tag:'Live',tagColor:'var(--green)',tagBg:'var(--green-bg)',meta:'Deployed \u2014 Strategic Planning'},
+      {title:'Suzy Speaks AI Research',tag:'Live',tagColor:'var(--green)',tagBg:'var(--green-bg)',meta:'5x faster, 40% cheaper'}
+    ]
+  };
+
+  const aiResponses = {
+    'What are the top risks in our patent landscape?': '<h4>Patent Landscape \u2014 Top Risks</h4><p>Based on the latest Eureka scan across your active R&D portfolio:</p><ul><li><strong>High Risk:</strong> Ultra-Clean Paint Innovation \u2014 overlap detected with a micro-encapsulation patent filed Q1 2026. Recommend provisional filing within 90 days.</li><li><strong>Medium Risk:</strong> Color Spell formulation \u2014 2 adjacent patents in color-changing pigment chemistry. Freedom-to-operate analysis recommended.</li><li><strong>Low Risk:</strong> Smart Label packaging \u2014 no blocking patents identified. Clear path to file.</li></ul><p>Want me to generate a full IP briefing for the R&D team?</p>',
+    'Show me the latest consumer research summary': '<h4>Consumer Research \u2014 Latest Findings</h4><p>From the most recent Suzy Speaks + Listen Labs study (108 parents, children ages 3-12):</p><ul><li><strong>Trust Advantage:</strong> Parents prefer Crayola 4x over tech giants for kid-facing AI \u2014 driven by safety, nostalgia, and child-first values.</li><li><strong>Key Insight:</strong> Parents value the creative <em>process</em>, not the output. AI must spark ideas, not create for the child.</li><li><strong>Age Sensitivity:</strong> Ages 6-8 are most sensitive to \u201cAI replacing creativity\u201d \u2014 need explicit reassurance in product messaging.</li><li><strong>Barrier:</strong> The real barrier is not competition \u2014 it is friction. Mess, time, cost, and idea fatigue limit creativity more than any brand.</li></ul><p>This supports the strategic imperative: build the first AI that protects, inspires, and expands human creativity.</p>',
+    'Summarize our globalization progress': '<h4>Globalization Progress \u2014 AI Impact</h4><p>Against the 2030 target of 30% revenue from global sales:</p><ul><li><strong>Current:</strong> Global revenue contribution at ~18% (up from 14% in 2024)</li><li><strong>AI Acceleration:</strong> Automated packaging localization cutting 6-week cycles to 3 days across 12 markets</li><li><strong>Content Pipeline:</strong> Product content generator producing market-adapted copy in 8 languages</li><li><strong>Retailer Partnerships:</strong> AI data partnerships active with 3 major retailers in EU and APAC</li></ul><p>On current trajectory, the Swarm Learning network will connect global market signals by Q2 2027, enabling real-time inventory and trend optimization across all regions.</p>',
+    'What is the status of Platform X?': '<h4>Platform X \u2014 Status Update</h4><p>Platform X is Crayola\'s AI-enabled ecosystem for connected products, content, and experiences:</p><ul><li><strong>Phase:</strong> Discovery \u2192 Early Ideation (Stage 2)</li><li><strong>Lead Product:</strong> Creativity Companion \u2014 AI drawing robot with guided prompts and age-fit scaffolding</li><li><strong>Consumer Testing:</strong> Scheduled Q3 2026, ages 3-5 and 6-8 cohorts</li><li><strong>Tech Stack:</strong> On-device AI with cloud-optional features, privacy-first architecture</li><li><strong>Differentiator:</strong> Only platform anchored in trust, age-fit design, and parent co-creation</li></ul><p>This maps to the 2027 roadmap target of Platform X Expansion as a consumer-facing capability.</p>'
+  };
+
+  // ── COMPONENTS ──
+
+  function Header(props){
+    var view=props.view, setView=props.setView;
+    var tabs = ['Overview','Insights','Pipeline','Ask AI'];
+    return h('div',{className:'header'},
+      h('div',{className:'header-left'},
+        h('div',{className:'logo'},
+          h('div',{className:'logo-icon'},'C'),
+          'Crayola ',h('span',null,'AI')
+        ),
+        h('div',{className:'nav-tabs'},
+          tabs.map(function(t){return h('button',{className:'nav-tab'+(view===t?' active':''),onClick:function(){setView(t)}},t)})
+        )
+      ),
+      h('div',{className:'header-right'},
+        h('span',{className:'badge'},'INDICATIVE DEMO'),
+        h('div',{className:'avatar'},'CR')
+      )
+    );
+  }
+
+  function Overview(props){
+    var setView=props.setView;
+    return h('div',{className:'main fade-in'},
+      h('div',{className:'cover'},
+        h('div',null,
+          h('div',{className:'cover-eyebrow'},'Innovation-to-Market AI'),
+          h('div',{className:'cover-title'},'Creativity meets ',h('span',null,'intelligence')),
+          h('div',{className:'cover-sub'},'An indicative demo of how AI accelerates Crayola\'s innovation pipeline \u2014 from consumer insight to shelf. Every screen represents a working capability, connected to your data, your processes, and your strategy.'),
+          h('div',{className:'cover-stats'},
+            h('div',null,h('div',{className:'stat-val'},'10%'),h('div',{className:'stat-lbl'},'SG&A Unlocked')),
+            h('div',null,h('div',{className:'stat-val'},'30%'),h('div',{className:'stat-lbl'},'Global Revenue by 2030')),
+            h('div',null,h('div',{className:'stat-val'},'5x'),h('div',{className:'stat-lbl'},'Faster Research'))
+          )
+        ),
+        h('div',{className:'cover-visual'},
+          h('div',{style:{textAlign:'center',padding:'40px'}},
+            h('div',{style:{fontSize:'48px',marginBottom:'16px'}},'\uD83C\uDFA8'),
+            h('div',{style:{fontSize:'18px',fontWeight:'800',letterSpacing:'-0.5px',color:'var(--brand)',marginBottom:'8px'}},'AI as an Ally'),
+            h('div',{style:{fontSize:'13px',color:'var(--text-dim)',maxWidth:'280px',margin:'0 auto'}},'Helping Crayola work smarter and create more creative moments')
+          )
+        )
+      ),
+
+      h('div',{className:'warn-box'},
+        h('strong',null,'\u26A0 This is a simulation. '),
+        'The screens, data, and workflows shown are a proof of concept built to demonstrate capability and user experience. No final design decisions have been made \u2014 the signals, layout, and workflows will evolve as we move into a formal build with Crayola. The underlying architecture connects to live data sources. What you are seeing is a working system \u2014 not a mockup.'
+      ),
+
+      h('div',{className:'flow-section'},
+        h('div',{className:'flow-title'},'Innovation Route to Market'),
+        h('div',{className:'flow-sub'},'AI embedded at every stage \u2014 from strategic planning through consumer-facing experiences'),
+        h('div',{className:'flow-track'},
+          [{icon:'\uD83D\uDD2D',label:'Strategic Planning',sub:'Trend analysis, FIT',done:true},
+           {icon:'\uD83D\uDCE6',label:'Product Development',sub:'New Spec System',done:true},
+           {icon:'\uD83D\uDE80',label:'Execution',sub:'Manufacturing, Supply Chain',done:false,active:true},
+           {icon:'\uD83D\uDCCA',label:'Performance Mgmt',sub:'POS, Shopper KPIs',done:false},
+           {icon:'\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67',label:'Consumer Facing',sub:'Platform X, GEO',done:false}
+          ].flatMap(function(n,i,a){
+            var nodes = [h('div',{className:'flow-node'+(n.done?' done':'')+(n.active?' active':'')},
+              h('div',{className:'fn-icon'},n.icon),
+              h('div',{className:'fn-label'},n.label),
+              h('div',{className:'fn-sub'},n.sub)
+            )];
+            if(i<a.length-1) nodes.push(h('div',{className:'flow-arrow'},'\u2192'));
+            return nodes;
+          })
+        )
+      ),
+
+      h('div',{className:'stat-strip'},
+        h('div',{className:'stat-card'},h('div',{className:'sc-val'},'7'),h('div',{className:'sc-label'},'Active Use Cases')),
+        h('div',{className:'stat-card'},h('div',{className:'sc-val'},'12'),h('div',{className:'sc-label'},'AI Brilliant Basics')),
+        h('div',{className:'stat-card'},h('div',{className:'sc-val'},'2027'),h('div',{className:'sc-label'},'Mastery Target')),
+        h('div',{className:'stat-card'},h('div',{className:'sc-val'},'40%'),h('div',{className:'sc-label'},'Cost Reduction (Research)'))
+      ),
+
+      h('div',{className:'section-header'},
+        h('div',{className:'section-eyebrow'},'Capability Modules'),
+        h('div',{className:'section-title'},'What This Platform Does')
+      ),
+      h('div',{className:'cover-features'},
+        [{icon:'\uD83D\uDD2C',bg:'var(--blue-bg)',title:'Consumer Research AI',desc:'AI-moderated research at 5x speed. Synthesize consumer signals, behaviors, and feedback into actionable insights across markets.'},
+         {icon:'\uD83C\uDFA8',bg:'var(--purple-bg)',title:'Packaging & Design Automation',desc:'Generate packaging variants, merch designs, and product imagery in minutes \u2014 brand-compliant and ready for review.'},
+         {icon:'\uD83E\uDDEA',bg:'var(--green-bg)',title:'Accelerated R&D',desc:'Patent landscape scanning, formulation intelligence, and competitive analysis powered by Eureka and AI patent platforms.'},
+         {icon:'\uD83D\uDCDD',bg:'var(--orange-bg)',title:'Product Content Studio',desc:'Automated product descriptions, marketing copy, and localized content across languages and markets.'},
+         {icon:'\uD83D\uDD0D',bg:'var(--amber-bg)',title:'GEO Search Optimization',desc:'Ensure Crayola is discoverable and influential in AI-driven answers on ChatGPT, Gemini, and Perplexity.'},
+         {icon:'\uD83E\uDD16',bg:'var(--brand-light)',title:'Platform X Ecosystem',desc:'Crayola\'s AI-enabled ecosystem for connected products, content, and experiences rooted in creativity and trust.'}
+        ].map(function(f){return h('div',{className:'cover-feature'},
+          h('div',{className:'cf-icon',style:{background:f.bg}},f.icon),
+          h('div',{className:'cf-title'},f.title),
+          h('div',{className:'cf-desc'},f.desc)
+        )})
+      ),
+
+      h('div',{style:{marginTop:'40px'}},
+        h('div',{className:'section-header'},
+          h('div',{className:'section-eyebrow'},'The Shift'),
+          h('div',{className:'section-title'},'Before AI vs. With AI')
+        ),
+        h('div',{className:'ba-grid'},
+          h('div',{className:'ba-col before'},
+            h('h3',null,'\uD83D\uDD34 Before'),
+            h('ul',null,
+              h('li',null,'3-week agency cycle for packaging variants'),
+              h('li',null,'Expensive small-scale focus groups with low-quality survey data'),
+              h('li',null,'Manual patent searching across fragmented databases'),
+              h('li',null,'Product content written market-by-market, language-by-language'),
+              h('li',null,'SEO strategy blind to generative AI answer engines'),
+              h('li',null,'Innovation pipeline managed in spreadsheets and slide decks')
+            )
+          ),
+          h('div',{className:'ba-col after'},
+            h('h3',null,'\uD83D\uDFE2 With AI'),
+            h('ul',null,
+              h('li',null,'12 packaging concepts generated in 4 minutes, brand-compliant'),
+              h('li',null,'AI-moderated research: 5x faster, 40% cheaper, 4x sample size'),
+              h('li',null,'Real-time patent intelligence with automated overlap alerts'),
+              h('li',null,'Localized product content across 8 languages simultaneously'),
+              h('li',null,'GEO optimization: visible in 70%+ of AI-generated answers'),
+              h('li',null,'Live innovation pipeline with AI-driven stage-gate recommendations')
+            )
+          )
+        )
+      )
+    );
+  }
+
+  function Insights(props){
+    var _ai = useState(1);
+    var activeInsight = _ai[0], setActiveInsight = _ai[1];
+    var _dt = useState('Extract');
+    var detailTab = _dt[0], setDetailTab = _dt[1];
+    var current = insights.filter(function(i){return i.id===activeInsight})[0]||insights[0];
+    var statusColors = {New:{c:'var(--blue)',bg:'var(--blue-bg)'},'In Review':{c:'var(--amber)',bg:'var(--amber-bg)'},Flagged:{c:'var(--red)',bg:'var(--red-bg)'}};
+    var sc = statusColors[current.status]||statusColors.New;
+
+    var analysisTexts = {
+      1:'This research validates Crayola\'s unique position in the creative AI space. The 4x trust advantage over tech competitors is a durable moat \u2014 built on decades of brand equity, not technology. The strategic implication is clear: Crayola should lead with trust and age-fit design, not feature parity with tech companies. The \u201cprocess over product\u201d insight aligns perfectly with the \u201cAI as a Spark, Not a Substitute\u201d principle from the Five Truths. Recommend embedding this language in all consumer-facing AI product messaging.',
+      2:'The packaging automation pipeline demonstrates immediate SG&A impact. At 4 minutes per design cycle vs. 3 weeks traditionally, this capability alone could unlock significant cost savings across the product portfolio. Brand compliance at 92% is strong but needs to reach 98%+ before full automation. Recommend: expand to all product lines in Q3, with human review loop maintained for brand-sensitive lines (Classic Colors, flagship products).',
+      3:'The patent overlap on micro-encapsulation technology is the highest priority item in the R&D pipeline. Two competitors are expanding in this segment \u2014 delay increases risk exponentially. The Eureka platform provides early awareness that historically would not surface until patent prosecution. Recommend: immediate provisional filing and freedom-to-operate analysis for the Color Spell formulation as secondary priority.',
+      4:'The GEO visibility gap represents a significant strategic opportunity. At 34% current visibility, Crayola is under-represented in AI-generated answers relative to brand authority. The structured content strategy (250+ activity guides) maps directly to the External AI Brilliant Basics pillar of \u201cSEO to GEO\u201d. This is a first-mover advantage \u2014 most CPG brands have not yet optimized for generative AI discovery.'
+    };
+
+    var actionItems = {
+      1:['Brief brand team on trust advantage positioning','Update consumer-facing AI messaging guidelines','Schedule age-cohort testing for Platform X concepts'],
+      2:['Route to Brand Director for approval review','Expand automation to 5 additional product lines','Benchmark 98% brand compliance target for Q3'],
+      3:['File provisional patent within 90 days','Commission freedom-to-operate analysis for Color Spell','Schedule IP strategy review with R&D leadership'],
+      4:['Develop 250+ structured activity guides for AI platforms','Engage ChatGPT and Gemini content partnerships','Set up monthly GEO visibility tracking dashboard']
+    };
+
+    return h('div',{className:'main fade-in'},
+      h('div',{className:'inbox-layout'},
+        h('div',{className:'inbox-list'},
+          h('div',{className:'inbox-list-header'},
+            h('span',null,'AI Insights Feed'),
+            h('span',{className:'badge'},String(insights.length))
+          ),
+          insights.map(function(item){
+            var ic=statusColors[item.status]||statusColors.New;
+            return h('div',{className:'inbox-item'+(activeInsight===item.id?' active':''),onClick:function(){setActiveInsight(item.id);setDetailTab('Extract')}},
+              h('div',{className:'inbox-item-title'},item.title),
+              h('div',{className:'inbox-item-sub'},item.category),
+              h('div',{className:'inbox-item-meta'},
+                h('span',{className:'inbox-item-tag',style:{background:ic.bg,color:ic.c}},item.status),
+                h('span',{className:'inbox-item-time'},item.time)
+              )
+            );
+          })
+        ),
+        h('div',{className:'inbox-detail'},
+          h('div',{className:'inbox-detail-header'},
+            h('div',{className:'dp-eyebrow'},current.category+' Intelligence'),
+            h('div',{className:'dp-title'},current.title),
+            h('div',{className:'dp-subtitle'},current.summary)
+          ),
+          h('div',{className:'dp-tabs'},
+            ['Extract','Analysis','Actions'].map(function(t){return h('button',{className:'dp-tab'+(detailTab===t?' active':''),onClick:function(){setDetailTab(t)}},t)})
+          ),
+          h('div',{className:'inbox-detail-body'},
+            detailTab==='Extract'?
+              h('table',{className:'data-table'},
+                h('thead',null,h('tr',null,h('th',null,'Field'),h('th',null,'Value'),h('th',null,'Confidence'))),
+                h('tbody',null,current.fields.map(function(f){
+                  return h('tr',null,
+                    h('td',null,h('span',{className:'field-name'},f.name)),
+                    h('td',null,h('span',{className:'field-val'},f.val)),
+                    h('td',null,h('span',{className:'confidence '+(f.conf==='high'?'conf-high':'conf-med')},
+                      h('span',{className:'conf-dot',style:{background:f.conf==='high'?'var(--green)':'var(--amber)'}}),
+                      f.conf==='high'?'High':'Medium'
+                    ))
+                  );
+                }))
+              ):
+            detailTab==='Analysis'?
+              h('div',null,
+                h('div',{style:{padding:'20px',background:'var(--bg)',borderRadius:'var(--radius)',marginBottom:'16px'}},
+                  h('div',{style:{fontSize:'13px',fontWeight:'700',marginBottom:'8px'}},'AI Analysis'),
+                  h('div',{style:{fontSize:'13px',color:'var(--text-secondary)',lineHeight:'1.7'}},analysisTexts[current.id])
+                ),
+                h('div',{className:'warn-box'},h('strong',null,'Note: '),'This analysis is AI-generated from available data. All recommendations should be validated by domain experts before action.')
+              ):
+              h('div',null,
+                h('div',{style:{fontSize:'13px',fontWeight:'700',marginBottom:'16px'}},'Recommended Actions'),
+                (actionItems[current.id]||[]).map(function(a,i){
+                  return h('div',{style:{display:'flex',gap:'12px',alignItems:'center',padding:'12px 16px',background:i===0?'var(--brand-light)':'var(--bg)',borderRadius:'var(--radius-sm)',marginBottom:'8px',border:i===0?'1px solid var(--brand-mid)':'1px solid var(--border)'}},
+                    h('div',{style:{width:'24px',height:'24px',borderRadius:'6px',background:i===0?'var(--brand)':'var(--border)',color:i===0?'white':'var(--text-muted)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'11px',fontWeight:'700',flexShrink:'0'}},String(i+1)),
+                    h('div',{style:{fontSize:'13px',fontWeight:i===0?'600':'400',color:i===0?'var(--text)':'var(--text-secondary)'}},a)
+                  );
+                })
+              )
+          )
+        )
+      )
+    );
+  }
+
+  function PipelineView(){
+    return h('div',{className:'main fade-in'},
+      h('div',{className:'section-header'},
+        h('div',{className:'section-eyebrow'},'Innovation Pipeline'),
+        h('div',{className:'section-title'},'Idea to Market \u2014 Live Tracker'),
+        h('div',{className:'section-subtitle'},'AI-powered stage-gate management across the innovation route to market')
+      ),
+      h('div',{className:'pipeline-cols'},
+        Object.keys(pipelineData).map(function(stage){
+          var items = pipelineData[stage];
+          return h('div',{className:'pipe-col'},
+            h('div',{className:'pipe-col-header'},
+              h('span',{className:'pipe-col-title'},stage),
+              h('span',{className:'pipe-count'},String(items.length))
+            ),
+            items.map(function(item){
+              return h('div',{className:'pipe-card'},
+                h('div',{className:'pipe-card-title'},item.title),
+                h('div',{className:'pipe-card-meta'},item.meta),
+                h('span',{className:'pipe-card-tag',style:{background:item.tagBg,color:item.tagColor}},item.tag)
+              );
+            })
+          );
+        })
+      ),
+
+      h('div',{style:{marginTop:'32px'}},
+        h('div',{className:'section-header'},
+          h('div',{className:'section-eyebrow'},'Strategic Alignment'),
+          h('div',{className:'section-title'},'Brilliant Basics \u2014 Internal & External')
+        ),
+        h('div',{className:'cards-grid'},
+          [{icon:'\uD83D\uDC65',bg:'var(--blue-bg)',title:'Employee AI Adoption',desc:'Practical, everyday AI tools that enhance productivity, creativity, and confidence without replacing human judgment.',type:'Internal'},
+           {icon:'\uD83D\uDD04',bg:'var(--green-bg)',title:'Continuous Improvement Culture',desc:'Test-and-learn mindset where teams continuously refine ideas, workflows, and decisions based on real-time insights.',type:'Internal'},
+           {icon:'\uD83D\uDCCA',bg:'var(--purple-bg)',title:'Data & Analytics Foundation',desc:'Trusted, connected data foundation that enables AI to deliver reliable insights, predictions, and decision support.',type:'Internal'},
+           {icon:'\uD83D\uDD0D',bg:'var(--amber-bg)',title:'SEO to GEO',desc:'Evolve from traditional search optimization to generative experience optimization \u2014 be discoverable in AI answers.',type:'External'},
+           {icon:'\uD83D\uDCAC',bg:'var(--orange-bg)',title:'Engage on ChatGPT & Gemini',desc:'Meet consumers in the AI platforms they already use, delivering trusted, brand-safe guidance and inspiration.',type:'External'},
+           {icon:'\uD83D\uDE80',bg:'var(--brand-light)',title:'Launch Platform X',desc:'Build and scale Crayola\'s AI-enabled ecosystem for connected products, content, and experiences rooted in creativity.',type:'External'}
+          ].map(function(c){return h('div',{className:'card'},
+            h('div',{className:'card-header'},
+              h('div',{className:'card-icon',style:{background:c.bg}},c.icon),
+              h('span',{className:'card-badge',style:{background:c.type==='Internal'?'var(--blue-bg)':'var(--green-bg)',color:c.type==='Internal'?'var(--blue)':'var(--green)'}},c.type)
+            ),
+            h('div',{className:'card-title'},c.title),
+            h('div',{className:'card-desc'},c.desc)
+          )})
+        )
+      )
+    );
+  }
+
+  function AskAI(){
+    var _m = useState([{role:'bot',html:'<h4>\uD83D\uDC4B Welcome to Crayola Innovation AI</h4><p>I have access to your innovation pipeline, consumer research, R&D data, and market intelligence. How can I help?</p>'}]);
+    var messages = _m[0], setMessages = _m[1];
+    var _i = useState('');
+    var input = _i[0], setInput = _i[1];
+    var chips = Object.keys(aiResponses);
+
+    function send(text){
+      if(!text||!text.trim()) return;
+      var userMsg = {role:'user',html:text};
+      var botResp = {role:'bot',html: aiResponses[text] || '<h4>Processing</h4><p>I\'m analyzing your question across the innovation pipeline, consumer research database, and R&D intelligence. In a live system, this would query connected data sources in real time and return a synthesized answer within seconds.</p><p>Try one of the suggested questions to see a full demonstration.</p>'};
+      setMessages(function(m){return m.concat([userMsg, botResp])});
+      setInput('');
+    }
+
+    return h('div',{className:'main fade-in'},
+      h('div',{className:'ai-panel'},
+        h('div',{className:'ai-header'},
+          h('div',{className:'ai-icon'},'\u2726'),
+          h('div',{className:'ai-header-text'},
+            h('h3',null,'Crayola Innovation AI'),
+            h('p',null,'Connected to: Consumer Research \u00B7 R&D \u00B7 Pipeline \u00B7 Market Intel')
+          )
+        ),
+        h('div',{className:'ai-messages',id:'ai-scroll'},
+          messages.map(function(m){return h('div',{className:'ai-msg '+m.role,innerHTML:m.html})})
+        ),
+        h('div',{className:'ai-chips'},
+          chips.map(function(c){return h('button',{className:'chip',onClick:function(){send(c)}},c)})
+        ),
+        h('div',{className:'ai-input-row'},
+          h('input',{className:'ai-input',placeholder:'Ask about innovation pipeline, consumer insights, R&D...',value:input,onInput:function(e){setInput(e.target.value)},onKeydown:function(e){if(e.key==='Enter')send(input)}}),
+          h('button',{className:'send-btn',onClick:function(){send(input)}},'Send')
+        )
+      )
+    );
+  }
+
+  // ── APP ──
+  function App(){
+    var _v = useState('Overview');
+    var view = _v[0], setView = _v[1];
+
+    return h('div',{className:'app'},
+      Header({view:view, setView:setView}),
+      view==='Overview'? Overview({setView:setView}):
+      view==='Insights'? Insights({}):
+      view==='Pipeline'? PipelineView():
+      view==='Ask AI'? AskAI():
+      Overview({setView:setView})
+    );
+  }
+
+  // ── BOOT ──
+  _root=document.getElementById('root');
+  _app=App;
+  render();
+})();
 </script>
 </body>
 </html>
