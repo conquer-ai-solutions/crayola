@@ -58,6 +58,9 @@
   .sidebar .sb-item.active{border-left-color:var(--crayola-yellow);color:#000;font-weight:700;background:#fffdf3;}
   .sidebar .sb-item .sb-num{font-size:11px;color:var(--mid-grey);font-weight:600;letter-spacing:0.4px;width:18px;flex-shrink:0;}
   .sidebar .sb-item.active .sb-num{color:#000;}
+  .sidebar .sb-divider{height:1px;background:var(--border);margin:10px 22px 8px;}
+  .sidebar .sb-help svg{color:var(--muted);}
+  .sidebar .sb-help.active svg,.sidebar .sb-help:hover svg{color:#000;}
   .sidebar .sb-user{border-top:1px solid var(--border);padding:14px 22px 10px;display:flex;align-items:center;gap:10px;}
   .sidebar .sb-user .avatar{width:32px;height:32px;border-radius:50%;background:#000;color:var(--crayola-yellow);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .sidebar .sb-user .sb-user-meta{font-size:12px;color:#000;font-weight:600;line-height:1.25;}
@@ -307,6 +310,26 @@
   .screen{display:none;}
   .screen.active{display:block;}
 
+  /* ============= HELP PAGE ============= */
+  .help-section{margin-bottom:32px;}
+  .help-h{font-size:13px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);font-weight:700;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .help-card{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:20px 24px;margin-bottom:14px;}
+  .help-card:last-child{margin-bottom:0;}
+  .help-screen-title{font-size:15px;font-weight:700;margin:0 0 10px;letter-spacing:-0.2px;border-left:3px solid var(--crayola-yellow);padding-left:10px;}
+  .help-p{font-size:13.5px;line-height:1.65;color:#1a1a1a;margin:0 0 10px;}
+  .help-p:last-child{margin-bottom:0;}
+  .help-p em{color:var(--muted);font-style:normal;font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:0.4px;display:block;margin-bottom:3px;}
+  .help-list{margin:0;padding-left:20px;font-size:13.5px;line-height:1.7;}
+  .help-list li{margin-bottom:8px;}
+  .help-list li:last-child{margin-bottom:0;}
+  .help-ol{margin:0;padding-left:22px;font-size:13.5px;line-height:1.75;}
+  .help-ol li{margin-bottom:6px;}
+  .help-dl{margin:0;font-size:13.5px;line-height:1.6;}
+  .help-dl dt{font-weight:700;color:#000;margin-top:10px;}
+  .help-dl dt:first-child{margin-top:0;}
+  .help-dl dd{margin:2px 0 0;color:#3a3a3a;padding-left:0;}
+  .help-card code{background:var(--light-grey);padding:2px 6px;border-radius:3px;font-family:'SF Mono','Monaco','Menlo',monospace;font-size:12.5px;}
+
   @media (max-width:980px){
     .stat-grid,.hero-grid{grid-template-columns:1fr 1fr;}
     .two-col{grid-template-columns:1fr;}
@@ -354,13 +377,18 @@
       <div class="sb-rainbow"></div>
     </div>
     <nav class="sb-nav">
-      <div class="sb-item" data-target="screen1"><span class="sb-num">01</span><span>Forecast Monitor</span></div>
-      <div class="sb-item" data-target="screen2"><span class="sb-num">02</span><span>Exception Workspace</span></div>
-      <div class="sb-item" data-target="screen3"><span class="sb-num">03</span><span>Forecast Recommendation</span></div>
-      <div class="sb-item" data-target="screen4"><span class="sb-num">04</span><span>Alignment Drafts</span></div>
-      <div class="sb-item" data-target="screen5"><span class="sb-num">05</span><span>S&amp;OP Slide</span></div>
-      <div class="sb-item" data-target="screen6"><span class="sb-num">06</span><span>Retailer Line Review</span></div>
-      <div class="sb-item" data-target="screen7"><span class="sb-num">07</span><span>Executive Health</span></div>
+      <div class="sb-item" data-target="screen1"><span>Forecast Monitor</span></div>
+      <div class="sb-item" data-target="screen2"><span>Exception Workspace</span></div>
+      <div class="sb-item" data-target="screen3"><span>Forecast Recommendation</span></div>
+      <div class="sb-item" data-target="screen4"><span>Alignment Drafts</span></div>
+      <div class="sb-item" data-target="screen5"><span>S&amp;OP Slide</span></div>
+      <div class="sb-item" data-target="screen6"><span>Retailer Line Review</span></div>
+      <div class="sb-item" data-target="screen7"><span>Executive Health</span></div>
+      <div class="sb-divider"></div>
+      <div class="sb-item sb-help" data-target="screenHelp">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Help</span>
+      </div>
     </nav>
     <div class="sb-user">
       <div class="avatar">NQ</div>
@@ -442,13 +470,13 @@
           </thead>
           <tbody id="exception-tbody">
             <tr data-row="1"><td>1</td><td><strong>Twistables Crayons 24ct</strong></td><td>Walmart</td><td>BTS '26 W32–35</td><td class="dev-pos">+22% POS</td><td>Early Promotion Lift</td><td class="conf">87%</td><td><span class="pri MEDIUM">Medium</span></td><td><button class="row-action" onclick="goToScreen('screen2',this)">Review</button></td></tr>
-            <tr><td>2</td><td><strong>Washable Markers Classic 10ct</strong></td><td>Walmart</td><td>BTS '26 W30–33</td><td class="dev-neg">-14% ship</td><td>Easton DC Shipment Delay</td><td class="conf">91%</td><td><span class="pri HIGH">High</span></td><td><button class="row-action">Review</button></td></tr>
-            <tr><td>3</td><td><strong>Coloured Pencils 50ct</strong></td><td>Amazon</td><td>Q3 2026</td><td class="dev-pos">+9% POS</td><td>Algorithmic Search Boost</td><td class="conf">79%</td><td><span class="pri LOW">Low</span></td><td><button class="row-action">Review</button></td></tr>
-            <tr><td>4</td><td><strong>Model Magic 4oz</strong></td><td>Walmart</td><td>BTS '26 W31–34</td><td class="dev-neg">-18% POS</td><td>Substitution Risk (Play-Doh)</td><td class="conf">84%</td><td><span class="pri HIGH">High</span></td><td><button class="row-action">Review</button></td></tr>
-            <tr><td>5</td><td><strong>Inspiration Art Case</strong></td><td>Costco</td><td>Holiday '26 prep</td><td class="dev-pos">+31% pre-order</td><td>Pre-promo signal</td><td class="conf">76%</td><td><span class="pri MEDIUM">Medium</span></td><td><button class="row-action">Review</button></td></tr>
-            <tr><td>6</td><td><strong>Silly Putty Original</strong></td><td>Costco</td><td>Q2 2026</td><td class="dev-pos">+6% POS</td><td>Bundle effect</td><td class="conf">88%</td><td><span class="pri LOW">Low</span></td><td><button class="row-action">Review</button></td></tr>
-            <tr><td>7</td><td><strong>Globbles 4-pack</strong></td><td>Amazon</td><td>Q3 2026</td><td class="dev-pos">+127% POS</td><td>Viral / TikTok-driven demand</td><td class="conf">81%</td><td><span class="pri HIGH">High</span></td><td><button class="row-action">Review</button></td></tr>
-            <tr><td>8</td><td><strong>Crayons Classic 64ct</strong></td><td>Walmart</td><td>BTS '26 baseline</td><td class="dev-zero">on-track</td><td>Baseline confirmed</td><td class="conf">95%</td><td><span class="pri LOW">Low</span></td><td><button class="row-action disabled">— No action —</button></td></tr>
+            <tr><td>2</td><td><strong>Washable Markers Classic 10ct</strong></td><td>Walmart</td><td>BTS '26 W30–33</td><td class="dev-neg">-14% ship</td><td>Easton DC Shipment Delay</td><td class="conf">91%</td><td><span class="pri HIGH">High</span></td><td><button class="row-action" onclick="showToast('Demo: only the top exception navigates — see Help')">Review</button></td></tr>
+            <tr><td>3</td><td><strong>Coloured Pencils 50ct</strong></td><td>Amazon</td><td>Q3 2026</td><td class="dev-pos">+9% POS</td><td>Algorithmic Search Boost</td><td class="conf">79%</td><td><span class="pri LOW">Low</span></td><td><button class="row-action" onclick="showToast('Demo: only the top exception navigates — see Help')">Review</button></td></tr>
+            <tr><td>4</td><td><strong>Model Magic 4oz</strong></td><td>Walmart</td><td>BTS '26 W31–34</td><td class="dev-neg">-18% POS</td><td>Substitution Risk (Play-Doh)</td><td class="conf">84%</td><td><span class="pri HIGH">High</span></td><td><button class="row-action" onclick="showToast('Demo: only the top exception navigates — see Help')">Review</button></td></tr>
+            <tr><td>5</td><td><strong>Inspiration Art Case</strong></td><td>Costco</td><td>Holiday '26 prep</td><td class="dev-pos">+31% pre-order</td><td>Pre-promo signal</td><td class="conf">76%</td><td><span class="pri MEDIUM">Medium</span></td><td><button class="row-action" onclick="showToast('Demo: only the top exception navigates — see Help')">Review</button></td></tr>
+            <tr><td>6</td><td><strong>Silly Putty Original</strong></td><td>Costco</td><td>Q2 2026</td><td class="dev-pos">+6% POS</td><td>Bundle effect</td><td class="conf">88%</td><td><span class="pri LOW">Low</span></td><td><button class="row-action" onclick="showToast('Demo: only the top exception navigates — see Help')">Review</button></td></tr>
+            <tr><td>7</td><td><strong>Globbles 4-pack</strong></td><td>Amazon</td><td>Q3 2026</td><td class="dev-pos">+127% POS</td><td>Viral / TikTok-driven demand</td><td class="conf">81%</td><td><span class="pri HIGH">High</span></td><td><button class="row-action" onclick="showToast('Demo: only the top exception navigates — see Help')">Review</button></td></tr>
+            <tr><td>8</td><td><strong>Crayons Classic 64ct</strong></td><td>Walmart</td><td>BTS '26 baseline</td><td class="dev-zero">on-track</td><td>Baseline confirmed</td><td class="conf">95%</td><td><span class="pri LOW">Low</span></td><td><button class="row-action disabled" onclick="showToast('Already validated — no action required')">— No action —</button></td></tr>
           </tbody>
         </table>
         <div class="panel-foot">
@@ -523,7 +551,7 @@ Easton DC capacity headroom: 38,000 units/wk</pre>
       <div class="decision-bar">
         <div class="ai-suggest">AI suggested category: <span class="cat">Early Promotion Lift</span></div>
         <div class="decision-actions">
-          <select class="override">
+          <select class="override" onchange="if(this.selectedIndex>0){showToast('Override: '+this.value+' — re-running classifier');this.selectedIndex=0;}">
             <option>Override ↓</option>
             <option>Steady-state demand shift</option>
             <option>Substitution</option>
@@ -955,6 +983,134 @@ Niall — via Demand Sensing Monitor"></div>
     </div>
   </section>
 
+  <!-- ============================================================== -->
+  <!-- HELP — Demo guide -->
+  <!-- ============================================================== -->
+  <section id="screenHelp" class="screen">
+    <div class="page">
+      <div class="page-head">
+        <div>
+          <div class="page-title">Demo Guide</div>
+          <div class="page-sub">How to read and run this Demand Sensing Monitor</div>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h2 class="help-h">1 · How to use this demo</h2>
+        <div class="help-card">
+          <ul class="help-list">
+            <li><strong>Login:</strong> access code is <code>crayola2026</code>.</li>
+            <li><strong>Logout:</strong> button at the bottom of the sidebar — clears the session and returns to the access screen.</li>
+            <li><strong>Order:</strong> click any screen in the sidebar in any order. The storyline runs Forecast Monitor → Exception Workspace → Forecast Recommendation → Alignment Drafts → S&amp;OP Slide → Retailer Line Review → Executive Health.</li>
+            <li><strong>Narrative case running through every screen:</strong> Crayola Twistables Crayons 24ct at Walmart, weeks 32–35 of BTS 2026, running 22% above forecast on early POS pull-through.</li>
+            <li><strong>Data:</strong> every value is hardcoded. Clicking buttons does not write to a real backend — toasts and animations simulate the workflow.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h2 class="help-h">2 · Per-screen guide</h2>
+
+        <div class="help-card">
+          <h3 class="help-screen-title">Forecast Monitor (Screen 1)</h3>
+          <p class="help-p"><em>What this screen shows.</em> The morning queue Niall opens with his coffee. A summary banner of overnight AI work, three KPI cards, and a sortable table of exceptions waiting for human review.</p>
+          <p class="help-p"><em>What the operator does here.</em> Niall scans the AI banner, glances at the three stat cards, then opens the highest-priority exception (Twistables 24ct at Walmart) using the Review button on row 1.</p>
+          <p class="help-p"><em>What's real vs fabricated.</em> The AI summary banner is a fabricated set of overnight metrics. Stat cards (2,591 / 256 / 3) are illustrative. Queue rows are plausible Crayola SKUs at plausible retailers but are fabricated. SKU code formats (CRAY-TWST-24-WMT) are inventive but consistent with FMCG conventions. Real ingredients: Crayola product line names and the BTS 2026 timing.</p>
+        </div>
+
+        <div class="help-card">
+          <h3 class="help-screen-title">Exception Workspace (Screen 2)</h3>
+          <p class="help-p"><em>What this screen shows.</em> The single-SKU deep-dive for Twistables 24ct at Walmart. Raw POS pull-through table on the left, AI classification with precedents on the right, and a decision bar at the bottom.</p>
+          <p class="help-p"><em>What the operator does here.</em> Niall reads the AI's classification, checks the precedent matches, optionally overrides the category from the dropdown, and approves to advance.</p>
+          <p class="help-p"><em>What's real vs fabricated.</em> Raw POS data table is fabricated but plausible. Precedent matches (BTS 2024 Markers 12ct, BTS 2025 Coloured Pencils 24ct) are illustrative — Crayola does run BTS programmes at Walmart so the precedent shape is realistic. SAP S/4 references are realistic — Crayola does run SAP. The 87% confidence figure is illustrative.</p>
+        </div>
+
+        <div class="help-card">
+          <h3 class="help-screen-title">Forecast Recommendation (Screen 3)</h3>
+          <p class="help-p"><em>What this screen shows.</em> The AI's proposed forecast adjustment — +18% lift on weeks 32–35, weeks 36+ held flat — with the reasoning behind it and a clear approve / edit / escalate decision.</p>
+          <p class="help-p"><em>What the operator does here.</em> Niall reviews the lift size, the precedent decay curves, the Easton DC capacity headroom, and either approves to apply tonight, edits the lift %, or escalates to Commercial.</p>
+          <p class="help-p"><em>What's real vs fabricated.</em> The +18% lift and 6,840 unit numbers are illustrative. The Easton DC reference is real-anchored — Crayola HQ is in Easton, PA and they manufacture there. Walmart fill-rate target of 96% is industry-typical.</p>
+        </div>
+
+        <div class="help-card">
+          <h3 class="help-screen-title">Alignment Drafts (Screen 4)</h3>
+          <p class="help-p"><em>What this screen shows.</em> Three pre-drafted artefacts — an operating-calendar entry, an email to the Commercial lead, and a plant note to Easton — all generated from the approved adjustment.</p>
+          <p class="help-p"><em>What the operator does here.</em> Niall reads each draft, optionally edits, and clicks Send All to release them as one batch.</p>
+          <p class="help-p"><em>What's real vs fabricated.</em> All addressees, recipient names and content are fabricated. The S&amp;OP cadence (Wednesday review) is illustrative. The "22 minutes saved" figure is illustrative.</p>
+        </div>
+
+        <div class="help-card">
+          <h3 class="help-screen-title">S&amp;OP Slide (Screen 5)</h3>
+          <p class="help-p"><em>What this screen shows.</em> An auto-generated review slide ready to drop into Wednesday's S&amp;OP deck, with a mini bar chart, KPI cells, an action line and an audit trail.</p>
+          <p class="help-p"><em>What the operator does here.</em> Niall edits the title or action bullet inline, regenerates from latest data if needed, and adds the slide to the Wednesday deck.</p>
+          <p class="help-p"><em>What's real vs fabricated.</em> The slide layout mimics a typical Crayola S&amp;OP template. The mini bar chart is fabricated. The approval-trail timestamp is illustrative.</p>
+        </div>
+
+        <div class="help-card">
+          <h3 class="help-screen-title">Retailer Line Review (Screen 6)</h3>
+          <p class="help-p"><em>What this screen shows.</em> A Walmart Spring 2027 line review proposal deck on the left, and an AI Interrogator on the right that simulates a Walmart buyer-AI grilling the deck across four cycles. Crayola's AI defends each weak point and pre-strengthens the deck before Ben sees it.</p>
+          <p class="help-p"><em>What the operator does here.</em> Ben Thomas reviews the deck and the interrogation transcript, can re-run the interrogation, export to PPTX, or send the package to himself for review.</p>
+          <p class="help-p"><em>What's real vs fabricated.</em> <strong>Critical:</strong> the retailer is Walmart in this demo because the real client conversation about retailer line reviews is highly confidential and used a different retailer. Do not present this as a real Walmart submission. The Interrogator dialogue is scripted to illustrate the pattern; in production it would be a live LLM agent. Range and margin numbers are fabricated.</p>
+        </div>
+
+        <div class="help-card">
+          <h3 class="help-screen-title">Executive Health (Screen 7)</h3>
+          <p class="help-p"><em>What this screen shows.</em> A weekly health view written for Arvind Sahu and Ben Thomas — four hero metrics, a Before vs After comparison, a daily resolution trend chart and three open actions.</p>
+          <p class="help-p"><em>What the operator does here.</em> Arvind and Ben open this once a week, scan the metrics, and click into open items (Open Screen 6, Scope Discussion, Generate Briefing).</p>
+          <p class="help-p"><em>What's real vs fabricated.</em> Hero metrics (2,591 / 91% / 27.4 hrs / 1) are illustrative. The Before vs After table is illustrative. The bar chart values are fabricated.</p>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h2 class="help-h">3 · Stakeholders</h2>
+        <div class="help-card">
+          <ul class="help-list">
+            <li><strong>Niall Quinn</strong> — Crayola S&amp;OP lead, the operator/protagonist throughout the demo. Real role.</li>
+            <li><strong>Arvind Sahu</strong> — Crayola sponsor on the AI initiative, audience for the Executive Health view. Real contact.</li>
+            <li><strong>Ben Thomas</strong> — Crayola AI initiative lead, London-based, Moment of Belief audience for the Retailer Line Review screen. Real contact.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h2 class="help-h">4 · Glossary</h2>
+        <div class="help-card">
+          <dl class="help-dl">
+            <dt>S&amp;OP</dt><dd>Sales &amp; Operations Planning. Weekly/monthly cross-functional review of demand vs supply.</dd>
+            <dt>BTS</dt><dd>Back-to-school. Crayola's largest seasonal window in North America.</dd>
+            <dt>POS</dt><dd>Point-of-sale. Retailer's actual register data, fed back to vendor via Walmart Retail Link / Target Vendor Hub / etc.</dd>
+            <dt>DOH</dt><dd>Days on Hand. Inventory cover, in days of forward demand.</dd>
+            <dt>Fill rate</dt><dd>Percentage of retailer orders fulfilled on first pass.</dd>
+            <dt>Vendor portal / Vendor Central / Vendor Hub</dt><dd>Retailer-side systems where vendors see orders, POS data, and submit responses.</dd>
+            <dt>Line review</dt><dd>Retailer's annual or seasonal range-decision meeting where vendors pitch SKUs to be carried.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h2 class="help-h">5 · Confidentiality note</h2>
+        <div class="help-card">
+          <p class="help-p">Customer-facing examples in this demo (Walmart Spring 2027 line review on the Retailer Line Review screen) are fabricated. The underlying use case originated in a confidential conversation with Crayola; this demo deliberately uses a different retailer and synthetic data. Do not present this as a real Walmart submission.</p>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h2 class="help-h">6 · Demo path</h2>
+        <div class="help-card">
+          <ol class="help-ol">
+            <li><strong>Forecast Monitor</strong> — open the morning queue and frame the volume problem (2,847 SKU-weeks, 256 exceptions).</li>
+            <li><strong>Exception Workspace</strong> — drop into the Twistables 24ct deep-dive and show AI classification with precedents.</li>
+            <li><strong>Forecast Recommendation</strong> — show the proposed +18% lift and the reasoning, then approve.</li>
+            <li><strong>Alignment Drafts</strong> — three artefacts pre-drafted, sent in one click.</li>
+            <li><strong>S&amp;OP Slide</strong> — auto-generated review slide ready for Wednesday.</li>
+            <li><strong>Retailer Line Review</strong> — strategic moment: Walmart Spring 2027 deck plus buyer-AI interrogation.</li>
+            <li><strong>Executive Health</strong> — close on the weekly view Arvind and Ben actually receive.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- FOOTER -->
   <div class="foot">
     <div class="foot-rainbow"></div>
@@ -967,6 +1123,11 @@ Niall — via Demand Sensing Monitor"></div>
 </div>
 
 <script>
+/* All CTAs verified ce30b59+ — see Help page for flow notes.
+   Audit covers: sidebar nav (8 items incl. Help), per-row Review buttons on Screen 1,
+   Override <select>, decision/edit/escalate CTAs, Send/Cancel/Edit on Screen 4,
+   slide regenerate + deck CTAs on Screen 5, Interrogator + export on Screen 6,
+   open-action links on Screen 7, and the sidebar Sign-out button. */
 /* =========================================================
    AUTH GATE — plaintext compare (works on file:// and https://)
    ========================================================= */
@@ -1030,7 +1191,8 @@ const loaderMsgs = {
   screen4: ["Drafting alignment messages…","Composing emails…"],
   screen5: ["Generating slide…","Rendering S&OP template…"],
   screen6: ["Running buyer-AI interrogation…","Generating Walmart deck…"],
-  screen7: ["Aggregating weekly metrics…","Building dashboard…"]
+  screen7: ["Aggregating weekly metrics…","Building dashboard…"],
+  screenHelp: ["Loading demo guide…","Indexing screens…"]
 };
 function showLoader(target){
   return new Promise(res=>{
