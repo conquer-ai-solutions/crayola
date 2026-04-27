@@ -63,6 +63,9 @@
   .sidebar .sb-user .sb-user-meta{font-size:12px;color:#000;font-weight:600;line-height:1.25;}
   .sidebar .sb-user .sb-user-meta span{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px;}
   .sidebar .sb-stamp{padding:8px 22px 16px;font-size:10.5px;color:var(--muted);letter-spacing:0.2px;}
+  .sb-logout{margin:8px 18px 14px;padding:8px 12px;border:1px solid var(--border);border-radius:4px;background:transparent;font-size:12px;font-weight:600;color:var(--muted);text-align:center;cursor:pointer;font-family:inherit;width:calc(100% - 36px);transition:all 0.15s ease;letter-spacing:0.02em;}
+  .sb-logout:hover{border-color:var(--text);color:var(--text);background:var(--soft);}
+  .sb-logout svg{display:inline-block;vertical-align:-2px;margin-right:6px;}
   /* Avatar fallback used elsewhere */
   .avatar{width:32px;height:32px;border-radius:50%;background:#000;color:var(--crayola-yellow);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;}
   /* Main content shifts right */
@@ -363,6 +366,9 @@
       <div class="avatar">NQ</div>
       <div class="sb-user-meta">Niall Quinn<span>S&amp;OP</span></div>
     </div>
+    <button class="sb-logout" onclick="logout()" title="Sign out and return to access screen">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign out
+    </button>
     <div class="sb-stamp">28 Apr 2026 · 08:14</div>
   </aside>
 
@@ -962,17 +968,9 @@ Niall — via Demand Sensing Monitor"></div>
 
 <script>
 /* =========================================================
-   AUTH GATE — sha-256 of "crayola2026"
+   AUTH GATE — plaintext compare (works on file:// and https://)
    ========================================================= */
-const PW_HASH = "9f4a3c1f6d2a8b0e5c7f1a9d4e2b6c8a0f3e7d5c9a1b4e8d6c2a7f0b3e9d1c5a"; // placeholder; recomputed below
-async function sha256(s){
-  const buf = new TextEncoder().encode(s);
-  const h = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-const TARGET_HASH_PROMISE = sha256("crayola2026");
-
-async function checkAuth(){
+function checkAuth(){
   if (sessionStorage.getItem('crayola_auth')==='ok'){
     document.getElementById('auth-gate').style.display='none';
     document.getElementById('app').style.display='block';
@@ -981,11 +979,9 @@ async function checkAuth(){
     initScreen('screen1');
     return;
   }
-  const target = await TARGET_HASH_PROMISE;
-  document.getElementById('auth-go').onclick = async ()=>{
-    const v = document.getElementById('auth-pw').value;
-    const h = await sha256(v);
-    if (h === target){
+  document.getElementById('auth-go').onclick = ()=>{
+    const v = (document.getElementById('auth-pw').value || '').trim();
+    if (v === 'crayola2026'){
       sessionStorage.setItem('crayola_auth','ok');
       document.getElementById('auth-gate').style.display='none';
       document.getElementById('app').style.display='block';
@@ -1003,6 +999,11 @@ async function checkAuth(){
   });
 }
 checkAuth();
+
+function logout(){
+  sessionStorage.removeItem('crayola_auth');
+  location.reload();
+}
 
 /* =========================================================
    PROGRESS BAR
