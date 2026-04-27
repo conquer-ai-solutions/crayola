@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Crayola × Conquer AI — Demand Sensing Monitor</title>
+<title>Crayola — Demand Sensing Monitor</title>
 <style>
   :root{
     --crayola-yellow:#FFCD15;
@@ -46,20 +46,27 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   #loader .loader-msg{margin-top:16px;font-size:13px;color:var(--muted);font-weight:500;letter-spacing:0.2px;}
 
-  /* ============= NAV ============= */
-  .nav{position:sticky;top:0;background:var(--white);border-bottom:1px solid var(--border);z-index:100;}
-  .nav-inner{max-width:1280px;margin:0 auto;padding:0 32px;height:62px;display:flex;align-items:center;gap:32px;}
-  .wordmark{display:flex;align-items:baseline;gap:8px;}
-  .wordmark .crayola-mark{font-size:22px;font-weight:800;font-style:italic;letter-spacing:-0.5px;color:#000;}
-  .wordmark .x{color:var(--mid-grey);font-weight:400;font-size:14px;}
-  .wordmark .conquer{font-size:13px;color:#000;font-weight:500;}
-  .nav-tabs{display:flex;gap:24px;flex:1;}
-  .nav-tab{font-size:13px;font-weight:500;color:var(--muted);padding:6px 2px;border-bottom:2px solid transparent;cursor:pointer;}
-  .nav-tab.active{color:#000;border-bottom-color:var(--crayola-yellow);}
-  .nav-tab:hover{color:#000;}
-  .nav-right{display:flex;align-items:center;gap:14px;}
+  /* ============= SIDEBAR ============= */
+  .sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:var(--white);border-right:1px solid #E5E5E5;box-shadow:0 0 14px rgba(0,0,0,0.03);z-index:100;display:flex;flex-direction:column;font-family:inherit;}
+  .sidebar .sb-brand{padding:22px 22px 0;}
+  .sidebar .wordmark{display:flex;align-items:baseline;gap:6px;}
+  .sidebar .wordmark .crayola-mark{font-size:22px;font-weight:800;font-style:italic;letter-spacing:-0.5px;color:#000;}
+  .sidebar .sb-rainbow{height:1px;margin:10px 0 0;background:linear-gradient(90deg,#e53935,#fb8c00,#fdd835,#43a047,#1e88e5,#8e24aa);opacity:0.9;}
+  .sidebar .sb-nav{flex:1;padding:14px 0 8px;overflow-y:auto;}
+  .sidebar .sb-item{display:flex;align-items:center;gap:10px;padding:9px 22px 9px 19px;border-left:3px solid transparent;cursor:pointer;font-size:13px;color:var(--muted);font-weight:500;transition:background 0.15s,color 0.15s,border-color 0.15s;}
+  .sidebar .sb-item:hover{background:#fafafa;color:#000;}
+  .sidebar .sb-item.active{border-left-color:var(--crayola-yellow);color:#000;font-weight:700;background:#fffdf3;}
+  .sidebar .sb-item .sb-num{font-size:11px;color:var(--mid-grey);font-weight:600;letter-spacing:0.4px;width:18px;flex-shrink:0;}
+  .sidebar .sb-item.active .sb-num{color:#000;}
+  .sidebar .sb-user{border-top:1px solid var(--border);padding:14px 22px 10px;display:flex;align-items:center;gap:10px;}
+  .sidebar .sb-user .avatar{width:32px;height:32px;border-radius:50%;background:#000;color:var(--crayola-yellow);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .sidebar .sb-user .sb-user-meta{font-size:12px;color:#000;font-weight:600;line-height:1.25;}
+  .sidebar .sb-user .sb-user-meta span{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px;}
+  .sidebar .sb-stamp{padding:8px 22px 16px;font-size:10.5px;color:var(--muted);letter-spacing:0.2px;}
+  /* Avatar fallback used elsewhere */
   .avatar{width:32px;height:32px;border-radius:50%;background:#000;color:var(--crayola-yellow);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;}
-  .nav-rainbow{height:2px;background:linear-gradient(90deg,#e53935,#fb8c00,#fdd835,#43a047,#1e88e5,#8e24aa);opacity:0.85;}
+  /* Main content shifts right */
+  body.app-ready #app{padding-left:240px;}
 
   /* ============= LAYOUT ============= */
   .page{max-width:1280px;margin:0 auto;padding:28px 32px 80px;}
@@ -300,7 +307,8 @@
   @media (max-width:980px){
     .stat-grid,.hero-grid{grid-template-columns:1fr 1fr;}
     .two-col{grid-template-columns:1fr;}
-    .nav-tabs{display:none;}
+    .sidebar{width:200px;}
+    body.app-ready #app{padding-left:200px;}
   }
 </style>
 </head>
@@ -310,7 +318,7 @@
 <div id="auth-gate">
   <div class="gate-card">
     <div class="gate-wordmark">crayola</div>
-    <div class="gate-sub">× Conquer AI · Demand Sensing Monitor</div>
+    <div class="gate-sub">Demand Sensing Monitor · Internal preview</div>
     <div class="gate-rainbow"></div>
     <input type="password" id="auth-pw" placeholder="Enter access code" autocomplete="off" />
     <button id="auth-go">Unlock</button>
@@ -334,29 +342,29 @@
 <!-- APP -->
 <div id="app" style="display:none;">
 
-  <!-- NAV -->
-  <nav class="nav">
-    <div class="nav-inner">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-brand">
       <div class="wordmark">
         <span class="crayola-mark">crayola</span>
-        <span class="x">×</span>
-        <span class="conquer">Conquer AI</span>
       </div>
-      <div class="nav-tabs">
-        <div class="nav-tab" data-target="screen1">Demand Monitor</div>
-        <div class="nav-tab" data-target="screen6">Retailer Decks</div>
-        <div class="nav-tab" data-target="screen7">Executive View</div>
-      </div>
-      <div class="nav-right">
-        <div style="font-size:11px;color:var(--muted);text-align:right;">
-          <div id="nav-date">Tuesday 28 April 2026</div>
-          <div style="font-size:10px;">08:14 AM · Easton, PA</div>
-        </div>
-        <div class="avatar">NQ</div>
-      </div>
+      <div class="sb-rainbow"></div>
     </div>
-    <div class="nav-rainbow"></div>
-  </nav>
+    <nav class="sb-nav">
+      <div class="sb-item" data-target="screen1"><span class="sb-num">01</span><span>Forecast Monitor</span></div>
+      <div class="sb-item" data-target="screen2"><span class="sb-num">02</span><span>Exception Workspace</span></div>
+      <div class="sb-item" data-target="screen3"><span class="sb-num">03</span><span>Forecast Recommendation</span></div>
+      <div class="sb-item" data-target="screen4"><span class="sb-num">04</span><span>Alignment Drafts</span></div>
+      <div class="sb-item" data-target="screen5"><span class="sb-num">05</span><span>S&amp;OP Slide</span></div>
+      <div class="sb-item" data-target="screen6"><span class="sb-num">06</span><span>Retailer Line Review</span></div>
+      <div class="sb-item" data-target="screen7"><span class="sb-num">07</span><span>Executive Health</span></div>
+    </nav>
+    <div class="sb-user">
+      <div class="avatar">NQ</div>
+      <div class="sb-user-meta">Niall Quinn<span>S&amp;OP</span></div>
+    </div>
+    <div class="sb-stamp">28 Apr 2026 · 08:14</div>
+  </aside>
 
   <!-- ============================================================== -->
   <!-- SCREEN 1 — Forecast Monitor: Morning Overview -->
@@ -852,7 +860,7 @@ Niall — via Demand Sensing Monitor"></div>
       <div class="page-head">
         <div>
           <div class="page-title">Crayola Demand Sensing — Weekly Health</div>
-          <div class="page-sub">Week of 21–28 April 2026 · Powered by Conquer AI · For Arvind Sahu &amp; Ben Thomas</div>
+          <div class="page-sub">Week of 21–28 April 2026 · Crayola Demand Sensing — Internal · For Arvind Sahu &amp; Ben Thomas</div>
         </div>
         <div style="font-size:12px;color:var(--muted);text-align:right;">
           Auto-published every Monday<br>Last refresh: 28 Apr 06:00 UTC
@@ -945,8 +953,8 @@ Niall — via Demand Sensing Monitor"></div>
   <div class="foot">
     <div class="foot-rainbow"></div>
     <div class="foot-inner">
-      <div>crayola × Conquer AI · Demand Sensing Monitor · Internal preview build</div>
-      <div>Powered by Conquer AI · v0.4.2 · Easton, PA &amp; London</div>
+      <div>crayola · Demand Sensing Monitor · Internal preview build</div>
+      <div>v0.4.2 · Easton, PA &amp; London</div>
     </div>
   </div>
 
@@ -968,6 +976,8 @@ async function checkAuth(){
   if (sessionStorage.getItem('crayola_auth')==='ok'){
     document.getElementById('auth-gate').style.display='none';
     document.getElementById('app').style.display='block';
+    document.body.classList.add('app-ready');
+    syncNavTabs('screen1');
     initScreen('screen1');
     return;
   }
@@ -979,6 +989,8 @@ async function checkAuth(){
       sessionStorage.setItem('crayola_auth','ok');
       document.getElementById('auth-gate').style.display='none';
       document.getElementById('app').style.display='block';
+      document.body.classList.add('app-ready');
+      syncNavTabs('screen1');
       initScreen('screen1');
     } else {
       const err = document.getElementById('auth-err');
@@ -1054,16 +1066,11 @@ function goToScreen(target, btnEl){
   });
 }
 function syncNavTabs(target){
-  document.querySelectorAll('.nav-tab').forEach(t=>{
+  document.querySelectorAll('.sb-item').forEach(t=>{
     t.classList.toggle('active', t.dataset.target === target);
   });
-  // Demand Monitor active for screens 1-5
-  if (['screen1','screen2','screen3','screen4','screen5'].includes(target)){
-    const dm = document.querySelector('.nav-tab[data-target="screen1"]');
-    if (dm) dm.classList.add('active');
-  }
 }
-document.querySelectorAll('.nav-tab').forEach(t=>{
+document.querySelectorAll('.sb-item').forEach(t=>{
   t.addEventListener('click',()=>goToScreen(t.dataset.target, t));
 });
 
@@ -1297,7 +1304,7 @@ window.initScreen = function(id){
    GLOBAL BUTTON RIPPLE
    ========================================================= */
 document.addEventListener('click', e=>{
-  const b = e.target.closest('.btn, .row-action, .oa-link, .nav-tab');
+  const b = e.target.closest('.btn, .row-action, .oa-link, .sb-item');
   if (b) ripple(b);
 }, true);
 </script>
