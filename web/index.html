@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Crayola × Conquer AI — Demand Sensing Monitor</title>
+<style>
+  :root{
+    --crayola-yellow:#FFCD15;
+    --crayola-black:#000000;
+    --white:#FFFFFF;
+    --light-grey:#F4F4F4;
+    --mid-grey:#AAABAB;
+    --border:#E4E4E4;
+    --text:#1a1a1a;
+    --muted:#6b6b6b;
+    --green:#2E7D32;
+    --amber:#E65100;
+    --red:#C62828;
+    --ai-purple:#5B3F9B;
+    --ai-navy:#1A2B4A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--white);color:var(--text);font-size:14px;line-height:1.45;}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  /* ============= AUTH GATE ============= */
+  #auth-gate{position:fixed;inset:0;background:var(--white);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+  #auth-gate .gate-card{width:380px;padding:40px;border:1px solid var(--border);border-radius:6px;background:var(--white);box-shadow:0 4px 24px rgba(0,0,0,0.06);text-align:center;}
+  #auth-gate .gate-wordmark{font-size:32px;font-weight:800;font-style:italic;letter-spacing:-0.5px;color:#000;}
+  #auth-gate .gate-sub{font-size:13px;color:var(--muted);margin-top:4px;}
+  #auth-gate .gate-rainbow{height:2px;width:100%;margin:18px 0 22px;background:linear-gradient(90deg,#e53935,#fb8c00,#fdd835,#43a047,#1e88e5,#8e24aa);}
+  #auth-gate input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:4px;font-size:14px;margin-bottom:12px;font-family:inherit;}
+  #auth-gate input:focus{outline:none;border-color:var(--crayola-yellow);box-shadow:0 0 0 3px rgba(255,205,21,0.2);}
+  #auth-gate button{width:100%;padding:12px;background:var(--crayola-yellow);color:#000;font-weight:700;border-radius:4px;font-size:14px;}
+  #auth-gate .gate-error{color:var(--red);font-size:12px;margin-top:8px;min-height:14px;}
+  #auth-gate .gate-foot{margin-top:18px;font-size:11px;color:var(--muted);}
+
+  /* ============= TOP PROGRESS BAR ============= */
+  #top-progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--crayola-yellow);z-index:9999;transition:width 0.6s cubic-bezier(0.65,0.05,0.36,1),opacity 0.4s;}
+
+  /* ============= LOADING OVERLAY ============= */
+  #loader{position:fixed;inset:0;background:rgba(255,255,255,0.92);z-index:9000;display:none;align-items:center;justify-content:center;flex-direction:column;}
+  #loader.active{display:flex;}
+  .spinner{width:38px;height:38px;border:3px solid var(--light-grey);border-top-color:var(--crayola-yellow);border-radius:50%;animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #loader .loader-msg{margin-top:16px;font-size:13px;color:var(--muted);font-weight:500;letter-spacing:0.2px;}
+
+  /* ============= NAV ============= */
+  .nav{position:sticky;top:0;background:var(--white);border-bottom:1px solid var(--border);z-index:100;}
+  .nav-inner{max-width:1280px;margin:0 auto;padding:0 32px;height:62px;display:flex;align-items:center;gap:32px;}
+  .wordmark{display:flex;align-items:baseline;gap:8px;}
+  .wordmark .crayola-mark{font-size:22px;font-weight:800;font-style:italic;letter-spacing:-0.5px;color:#000;}
+  .wordmark .x{color:var(--mid-grey);font-weight:400;font-size:14px;}
+  .wordmark .conquer{font-size:13px;color:#000;font-weight:500;}
+  .nav-tabs{display:flex;gap:24px;flex:1;}
+  .nav-tab{font-size:13px;font-weight:500;color:var(--muted);padding:6px 2px;border-bottom:2px solid transparent;cursor:pointer;}
+  .nav-tab.active{color:#000;border-bottom-color:var(--crayola-yellow);}
+  .nav-tab:hover{color:#000;}
+  .nav-right{display:flex;align-items:center;gap:14px;}
+  .avatar{width:32px;height:32px;border-radius:50%;background:#000;color:var(--crayola-yellow);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;}
+  .nav-rainbow{height:2px;background:linear-gradient(90deg,#e53935,#fb8c00,#fdd835,#43a047,#1e88e5,#8e24aa);opacity:0.85;}
+
+  /* ============= LAYOUT ============= */
+  .page{max-width:1280px;margin:0 auto;padding:28px 32px 80px;}
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+  .page-title{font-size:22px;font-weight:700;letter-spacing:-0.3px;}
+  .page-sub{font-size:13px;color:var(--muted);margin-top:4px;}
+  .breadcrumb{font-size:12px;color:var(--muted);margin-bottom:12px;}
+  .breadcrumb strong{color:#000;}
+
+  /* ============= AI BANNER ============= */
+  .ai-banner{background:var(--ai-navy);color:#fff;padding:18px 22px;border-radius:6px;margin-bottom:20px;display:flex;gap:18px;align-items:flex-start;}
+  .ai-banner .icon{width:32px;height:32px;border-radius:50%;background:var(--crayola-yellow);color:#000;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:700;}
+  .ai-banner .content{flex:1;}
+  .ai-banner .title{font-size:12px;text-transform:uppercase;letter-spacing:0.6px;color:var(--crayola-yellow);font-weight:700;margin-bottom:4px;}
+  .ai-banner .body{font-size:13.5px;line-height:1.55;}
+  .ai-banner strong{color:var(--crayola-yellow);}
+
+  /* ============= STAT CARDS ============= */
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+  .stat-card{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:20px;position:relative;overflow:hidden;}
+  .stat-card .stat-num{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1;}
+  .stat-card .stat-label{font-size:13px;color:var(--muted);margin-top:6px;}
+  .stat-card .badge{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:0.4px;font-weight:700;padding:3px 8px;border-radius:3px;margin-top:10px;}
+  .badge.green{background:#E8F5E9;color:var(--green);}
+  .badge.amber{background:#FFF3E0;color:var(--amber);}
+  .badge.red{background:#FFEBEE;color:var(--red);}
+  .badge.yellow{background:var(--crayola-yellow);color:#000;}
+  .stat-card .underline{position:absolute;bottom:0;left:0;height:3px;width:0;background:var(--crayola-yellow);transition:width 0.8s ease 0.3s;}
+  .stat-card.animate .underline{width:100%;}
+  .stat-card.hero .stat-num{font-size:44px;}
+
+  /* ============= TABLE ============= */
+  .panel{background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+  .panel-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .panel-title{font-size:14px;font-weight:700;}
+  .panel-meta{font-size:12px;color:var(--muted);}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{background:var(--light-grey);text-align:left;padding:10px 14px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--muted);border-bottom:1px solid var(--border);}
+  tbody td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  tbody tr{opacity:0;transform:translateY(6px);transition:opacity 0.4s ease,transform 0.4s ease,background 0.15s;}
+  tbody tr.in{opacity:1;transform:translateY(0);}
+  tbody tr:hover{background:#fafafa;}
+  tbody tr:last-child td{border-bottom:none;}
+  .pri{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;padding:3px 7px;border-radius:3px;}
+  .pri.HIGH{background:#FFEBEE;color:var(--red);}
+  .pri.MEDIUM{background:#FFF3E0;color:var(--amber);}
+  .pri.LOW{background:#F4F4F4;color:var(--muted);}
+  .conf{font-weight:600;}
+  .dev-pos{color:var(--green);font-weight:600;}
+  .dev-neg{color:var(--red);font-weight:600;}
+  .dev-zero{color:var(--muted);font-weight:500;}
+  .row-action{font-size:12px;color:#000;font-weight:600;padding:5px 10px;border:1px solid var(--border);border-radius:3px;background:#fff;}
+  .row-action:hover{background:var(--crayola-yellow);border-color:var(--crayola-yellow);}
+  .row-action.disabled{color:var(--muted);cursor:not-allowed;}
+  .panel-foot{padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:#fafafa;font-size:12px;color:var(--muted);border-top:1px solid var(--border);}
+
+  /* ============= CTA ROW ============= */
+  .cta-row{display:flex;justify-content:flex-end;gap:12px;margin-top:24px;align-items:center;}
+  .cta-row .secondary-link{font-size:13px;color:#000;text-decoration:underline;cursor:pointer;}
+  .btn{padding:11px 20px;border-radius:4px;font-size:13px;font-weight:700;letter-spacing:0.2px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden;}
+  .btn-primary{background:var(--crayola-yellow);color:#000;}
+  .btn-primary:hover{background:#FFD33A;}
+  .btn-secondary{background:#fff;color:#000;border:1px solid var(--border);}
+  .btn-secondary:hover{border-color:#000;}
+  .btn-amber{background:#fff;color:var(--amber);border:1px solid var(--amber);}
+  .btn-amber:hover{background:#FFF3E0;}
+  .btn[disabled]{opacity:0.5;cursor:wait;}
+  .ripple{position:absolute;border-radius:50%;background:rgba(0,0,0,0.18);transform:scale(0);animation:ripple 0.5s linear;pointer-events:none;}
+  @keyframes ripple{to{transform:scale(3);opacity:0;}}
+
+  /* ============= RECORD HEADER ============= */
+  .record-card{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:20px 24px;margin-bottom:20px;}
+  .record-card h3{margin:0 0 14px;font-size:16px;font-weight:700;}
+  .record-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 28px;font-size:13px;}
+  .record-grid .lbl{color:var(--muted);}
+  .record-grid .val{color:#000;font-weight:500;}
+
+  /* ============= TWO COL ============= */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
+  .data-block{background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+  .data-block .db-head{padding:12px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;background:var(--light-grey);}
+  .data-block pre{margin:0;padding:18px;font-family:'SF Mono','Monaco','Menlo',monospace;font-size:12px;line-height:1.7;color:#1a1a1a;background:#fafafa;white-space:pre-wrap;overflow-x:auto;}
+
+  /* ============= AI CALLOUT ============= */
+  .ai-callout{background:var(--ai-purple);color:#fff;border-radius:6px;padding:18px 22px;opacity:0;transform:translateY(8px);transition:opacity 0.5s,transform 0.5s;}
+  .ai-callout.in{opacity:1;transform:translateY(0);}
+  .ai-callout .ai-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:11px;text-transform:uppercase;letter-spacing:0.6px;font-weight:700;color:var(--crayola-yellow);}
+  .ai-callout .ai-head .spark{display:inline-block;width:14px;height:14px;}
+  .ai-callout .ai-body{font-size:13.5px;line-height:1.6;}
+  .ai-callout .ai-body strong{color:var(--crayola-yellow);}
+  .ai-callout ul{padding-left:18px;margin:8px 0;}
+  .ai-callout li{margin-bottom:4px;}
+
+  /* ============= CLASSIFICATION DECISION ============= */
+  .decision-bar{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:20px;}
+  .decision-bar .ai-suggest{font-size:13px;}
+  .decision-bar .ai-suggest .cat{font-weight:700;color:#000;background:var(--crayola-yellow);padding:4px 10px;border-radius:3px;margin-left:6px;}
+  .decision-actions{display:flex;gap:8px;align-items:center;}
+  select.override{padding:8px 10px;border:1px solid var(--border);border-radius:3px;font-size:12px;font-family:inherit;}
+
+  /* ============= RESOLUTION CARD ============= */
+  .resolution-card{background:var(--white);border:2px solid var(--crayola-yellow);border-radius:6px;padding:24px 28px;margin-bottom:22px;position:relative;}
+  .resolution-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--crayola-yellow);}
+  .resolution-card h2{margin:0 0 14px;font-size:14px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);font-weight:700;}
+  .resolution-card .res-line{font-size:14px;margin-bottom:6px;}
+  .resolution-card .res-line .lbl{color:var(--muted);display:inline-block;width:130px;}
+  .resolution-card .res-line .val{color:#000;font-weight:600;}
+
+  /* ============= IMPACT PREVIEW ============= */
+  .impact-block{background:var(--light-grey);border-radius:6px;padding:18px 22px;margin-top:18px;}
+  .impact-block h4{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:0.4px;color:var(--muted);font-weight:700;}
+  .impact-block ul{margin:0;padding:0;list-style:none;}
+  .impact-block li{padding:4px 0;font-size:13px;color:#1a1a1a;}
+  .impact-block li::before{content:"✓ ";color:var(--green);font-weight:700;}
+
+  /* ============= EMAIL CARDS ============= */
+  .email-card{background:var(--white);border:1px solid var(--border);border-radius:6px;margin-bottom:14px;overflow:hidden;}
+  .email-card .ec-head{padding:12px 18px;background:var(--light-grey);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--muted);}
+  .email-card .ec-head .pill{background:var(--crayola-yellow);color:#000;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;}
+  .email-card .ec-body{padding:18px 22px;font-size:13px;line-height:1.7;font-family:'SF Mono','Monaco','Menlo',monospace;}
+  .email-card .ec-body .field{display:flex;gap:8px;}
+  .email-card .ec-body .field .k{color:var(--muted);width:70px;flex-shrink:0;}
+  .email-card .ec-body .body-text{margin-top:12px;font-family:'Inter',sans-serif;font-size:13.5px;color:#1a1a1a;line-height:1.65;white-space:pre-wrap;border-left:2px solid var(--crayola-yellow);padding-left:14px;}
+  .email-card.editing{border-color:var(--crayola-yellow);}
+
+  /* ============= SLIDE PREVIEW ============= */
+  .slide-frame{background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden;aspect-ratio:16/10;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+  .slide-yellow-bar{height:8px;background:var(--crayola-yellow);}
+  .slide-body{flex:1;padding:22px 28px;display:flex;flex-direction:column;}
+  .slide-title{font-size:18px;font-weight:800;letter-spacing:-0.3px;margin-bottom:14px;}
+  .slide-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+  .slide-kpi .k{background:var(--light-grey);padding:8px 10px;border-radius:3px;font-size:11px;}
+  .slide-kpi .k strong{display:block;font-size:13px;color:#000;margin-bottom:2px;}
+  .slide-chart{flex:1;background:#fafafa;border-radius:3px;padding:10px;display:flex;align-items:flex-end;gap:6px;min-height:120px;}
+  .slide-chart .bg{flex:1;background:var(--mid-grey);border-radius:2px 2px 0 0;position:relative;}
+  .slide-chart .bg.actual{background:var(--crayola-yellow);}
+  .slide-chart .bg.adj{background:var(--ai-navy);}
+  .slide-chart .bg .label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);}
+  .slide-foot{margin-top:14px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;}
+  .slide-foot .action{font-size:13px;color:#000;font-weight:600;margin-bottom:4px;}
+
+  /* ============= EDIT PANEL ============= */
+  .edit-panel{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:20px;}
+  .edit-panel h3{font-size:13px;text-transform:uppercase;letter-spacing:0.4px;color:var(--muted);font-weight:700;margin:0 0 14px;}
+  .edit-panel .field-grp{margin-bottom:14px;}
+  .edit-panel label{display:block;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+  .edit-panel input,.edit-panel textarea{width:100%;padding:8px 10px;font-family:inherit;font-size:13px;border:1px solid var(--border);border-radius:3px;}
+  .edit-panel textarea{resize:vertical;min-height:60px;}
+
+  /* ============= SCREEN 6 INTERROGATOR ============= */
+  .interrog-pane{background:#0F1A2D;color:#fff;border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:12px;min-height:520px;max-height:680px;overflow-y:auto;}
+  .interrog-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:12px;}
+  .interrog-head .it-title{font-size:13px;font-weight:700;color:#fff;}
+  .interrog-head .it-sub{font-size:10px;color:#8A9BB0;text-transform:uppercase;letter-spacing:0.4px;}
+  .interrog-head .it-status{font-size:10px;color:var(--crayola-yellow);font-weight:700;text-transform:uppercase;}
+  .bubble{max-width:88%;padding:10px 14px;border-radius:6px;font-size:12.5px;line-height:1.55;opacity:0;transform:translateY(6px);transition:opacity 0.3s,transform 0.3s;}
+  .bubble.in{opacity:1;transform:translateY(0);}
+  .bubble.buyer{background:#22344E;color:#E8EEF7;align-self:flex-start;border-left:2px solid #5A8BD9;}
+  .bubble.crayola{background:var(--crayola-yellow);color:#000;align-self:flex-end;border-right:2px solid #B38900;}
+  .bubble .who{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;opacity:0.75;}
+  .bubble.buyer .who{color:#9FB6D9;}
+  .bubble.crayola .who{color:#7A5A00;}
+  .interrog-banner{background:linear-gradient(90deg,var(--crayola-yellow),#FFE066);color:#000;padding:10px 14px;border-radius:4px;font-size:12px;font-weight:600;margin-top:8px;opacity:0;transition:opacity 0.5s;}
+  .interrog-banner.in{opacity:1;}
+
+  /* Screen 6 Slide */
+  .deck-slide{background:#fff;border:1px solid var(--border);border-radius:6px;padding:24px;min-height:520px;}
+  .deck-slide .ds-head{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--crayola-yellow);padding-bottom:12px;margin-bottom:16px;}
+  .deck-slide .ds-title{font-size:16px;font-weight:800;letter-spacing:-0.3px;}
+  .deck-slide .ds-walmart{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;}
+  .deck-block{margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed var(--border);}
+  .deck-block:last-child{border-bottom:none;}
+  .deck-block h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:0.4px;color:var(--muted);font-weight:700;}
+  .deck-sku-row{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--light-grey);}
+  .deck-sku-row:last-child{border-bottom:none;}
+  .deck-sku-row .add{color:var(--green);font-weight:700;font-size:10px;}
+  .deck-sku-row .disc{color:var(--red);font-weight:700;font-size:10px;}
+  .deck-mini-chart{display:flex;align-items:flex-end;gap:4px;height:60px;background:#fafafa;padding:6px;border-radius:3px;margin-bottom:8px;}
+  .deck-mini-chart .b{flex:1;background:var(--ai-navy);border-radius:2px 2px 0 0;}
+  .deck-mini-chart .b.hi{background:var(--crayola-yellow);}
+  .deck-bullet{font-size:12px;color:#444;padding:2px 0;}
+  .deck-bullet::before{content:"• ";color:var(--crayola-yellow);font-weight:700;}
+  .deck-money{display:flex;gap:18px;background:var(--light-grey);padding:12px 16px;border-radius:4px;margin-top:8px;}
+  .deck-money .m strong{display:block;font-size:18px;font-weight:800;}
+  .deck-money .m span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;}
+
+  /* ============= EXEC DASHBOARD ============= */
+  .hero-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+  .hero-card{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:22px;position:relative;overflow:hidden;}
+  .hero-card .num{font-size:42px;font-weight:800;letter-spacing:-1.2px;line-height:1;}
+  .hero-card .label{font-size:13px;color:#000;font-weight:600;margin-top:8px;}
+  .hero-card .sub{font-size:12px;color:var(--muted);margin-top:4px;}
+  .hero-card .line{position:absolute;bottom:0;left:0;height:3px;width:0;transition:width 1s ease 0.4s;}
+  .hero-card.animate .line{width:100%;}
+  .hero-card.green .line{background:var(--green);}
+  .hero-card.yellow .line{background:var(--crayola-yellow);}
+  .hero-card.amber .line{background:var(--amber);}
+
+  .ba-table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:24px;}
+  .ba-table th{background:var(--light-grey);text-align:left;padding:12px 16px;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border);}
+  .ba-table td{padding:14px 16px;border-bottom:1px solid var(--border);}
+  .ba-table tr:last-child td{border-bottom:none;}
+  .ba-table .before{color:var(--muted);}
+  .ba-table .after{color:#000;font-weight:600;}
+
+  .chart-panel{background:#fff;border:1px solid var(--border);border-radius:6px;padding:22px;margin-bottom:24px;}
+  .chart-panel h3{margin:0 0 14px;font-size:14px;font-weight:700;}
+  .chart-area{display:flex;align-items:flex-end;gap:14px;height:220px;padding:0 10px;border-bottom:1px solid var(--border);position:relative;}
+  .chart-bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;position:relative;align-items:center;}
+  .chart-bar .stacked{width:60%;display:flex;flex-direction:column;justify-content:flex-end;height:0;transition:height 1s ease;border-radius:3px 3px 0 0;overflow:hidden;}
+  .chart-bar .seg-yel{background:var(--crayola-yellow);height:0;transition:height 0.8s ease 0.4s;}
+  .chart-bar .seg-grn{background:var(--green);height:0;transition:height 0.8s ease 0.2s;}
+  .chart-bar .total{font-size:11px;font-weight:700;color:#000;margin-bottom:4px;}
+  .chart-bar .day{font-size:11px;color:var(--muted);margin-top:6px;}
+  .chart-legend{display:flex;gap:20px;margin-top:14px;font-size:12px;color:var(--muted);}
+  .chart-legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle;}
+
+  .open-actions{background:#fff;border:1px solid var(--border);border-radius:6px;padding:6px 0;}
+  .open-actions .oa-row{padding:14px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:13px;}
+  .open-actions .oa-row:last-child{border-bottom:none;}
+  .open-actions .oa-row .oa-link{font-size:12px;color:#000;font-weight:700;text-decoration:underline;cursor:pointer;}
+
+  /* ============= TOAST ============= */
+  #toast-stack{position:fixed;top:80px;right:24px;z-index:9500;display:flex;flex-direction:column;gap:8px;}
+  .toast{background:#000;color:#fff;padding:12px 18px;border-radius:4px;font-size:13px;font-weight:500;border-left:3px solid var(--crayola-yellow);box-shadow:0 4px 16px rgba(0,0,0,0.18);opacity:0;transform:translateX(20px);animation:toast-in 0.3s forwards,toast-out 0.4s forwards 3s;min-width:240px;}
+  @keyframes toast-in{to{opacity:1;transform:translateX(0);}}
+  @keyframes toast-out{to{opacity:0;transform:translateX(20px);}}
+
+  /* ============= FOOTER ============= */
+  .foot{margin-top:40px;border-top:1px solid var(--border);padding:18px 0 0;}
+  .foot-rainbow{height:1px;background:linear-gradient(90deg,#e53935,#fb8c00,#fdd835,#43a047,#1e88e5,#8e24aa);opacity:0.65;}
+  .foot-inner{max-width:1280px;margin:0 auto;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);}
+
+  /* SCREEN ROUTING */
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  @media (max-width:980px){
+    .stat-grid,.hero-grid{grid-template-columns:1fr 1fr;}
+    .two-col{grid-template-columns:1fr;}
+    .nav-tabs{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- AUTH GATE -->
+<div id="auth-gate">
+  <div class="gate-card">
+    <div class="gate-wordmark">crayola</div>
+    <div class="gate-sub">× Conquer AI · Demand Sensing Monitor</div>
+    <div class="gate-rainbow"></div>
+    <input type="password" id="auth-pw" placeholder="Enter access code" autocomplete="off" />
+    <button id="auth-go">Unlock</button>
+    <div class="gate-error" id="auth-err"></div>
+    <div class="gate-foot">Internal preview · Not for distribution</div>
+  </div>
+</div>
+
+<!-- TOP PROGRESS BAR -->
+<div id="top-progress"></div>
+
+<!-- LOADING OVERLAY -->
+<div id="loader">
+  <div class="spinner"></div>
+  <div class="loader-msg" id="loader-msg">Loading…</div>
+</div>
+
+<!-- TOAST STACK -->
+<div id="toast-stack"></div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="wordmark">
+        <span class="crayola-mark">crayola</span>
+        <span class="x">×</span>
+        <span class="conquer">Conquer AI</span>
+      </div>
+      <div class="nav-tabs">
+        <div class="nav-tab" data-target="screen1">Demand Monitor</div>
+        <div class="nav-tab" data-target="screen6">Retailer Decks</div>
+        <div class="nav-tab" data-target="screen7">Executive View</div>
+      </div>
+      <div class="nav-right">
+        <div style="font-size:11px;color:var(--muted);text-align:right;">
+          <div id="nav-date">Tuesday 28 April 2026</div>
+          <div style="font-size:10px;">08:14 AM · Easton, PA</div>
+        </div>
+        <div class="avatar">NQ</div>
+      </div>
+    </div>
+    <div class="nav-rainbow"></div>
+  </nav>
+
+  <!-- ============================================================== -->
+  <!-- SCREEN 1 — Forecast Monitor: Morning Overview -->
+  <!-- ============================================================== -->
+  <section id="screen1" class="screen active">
+    <div class="page">
+      <div class="page-head">
+        <div>
+          <div class="page-title">Demand Sensing Monitor — Morning Overview</div>
+          <div class="page-sub">Niall Quinn · S&amp;OP Lead · Tuesday 28 April 2026, 08:14 AM</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);text-align:right;">
+          Last batch: 27 Apr 23:48 UTC<br>Next batch: 28 Apr 23:00 UTC
+        </div>
+      </div>
+
+      <div class="ai-banner">
+        <div class="icon">✦</div>
+        <div class="content">
+          <div class="title">What the AI did overnight</div>
+          <div class="body">
+            Reviewed <strong>2,847 SKU-week buckets</strong> across 4 retailer feeds (Walmart Retail Link · Amazon Vendor Central · Target Vendor Hub · Costco) ·
+            <strong>2,591 within tolerance (91%)</strong> · <strong>256 exceptions</strong> flagged for review ·
+            3 retailer line review prep windows opening this week ·
+            Estimated planner time saved this morning: <strong>5.4 hours</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card animate">
+          <div class="stat-num" data-count="2591">0</div>
+          <div class="stat-label">Auto-Validated by AI</div>
+          <span class="badge green">On track</span>
+          <div class="underline"></div>
+        </div>
+        <div class="stat-card animate">
+          <div class="stat-num" data-count="256">0</div>
+          <div class="stat-label">Exceptions for Review</div>
+          <span class="badge amber">Action required</span>
+          <div class="underline"></div>
+        </div>
+        <div class="stat-card animate">
+          <div class="stat-num" data-count="3">0</div>
+          <div class="stat-label">Retailer Line Reviews Opening</div>
+          <span class="badge yellow">Strategic prep</span>
+          <div class="underline"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Exceptions Awaiting Review</div>
+          <div class="panel-meta">256 total · sorted by AI priority</div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:34px;">#</th>
+              <th>SKU</th>
+              <th>Retailer</th>
+              <th>Window</th>
+              <th>Deviation</th>
+              <th>AI Root Cause</th>
+              <th>Confidence</th>
+              <th>Priority</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="exception-tbody">
+            <tr data-row="1"><td>1</td><td><strong>Twistables Crayons 24ct</strong></td><td>Walmart</td><td>BTS '26 W32–35</td><td class="dev-pos">+22% POS</td><td>Early Promotion Lift</td><td class="conf">87%</td><td><span class="pri MEDIUM">Medium</span></td><td><button class="row-action" onclick="goToScreen('screen2',this)">Review</button></td></tr>
+            <tr><td>2</td><td><strong>Washable Markers Classic 10ct</strong></td><td>Walmart</td><td>BTS '26 W30–33</td><td class="dev-neg">-14% ship</td><td>Easton DC Shipment Delay</td><td class="conf">91%</td><td><span class="pri HIGH">High</span></td><td><button class="row-action">Review</button></td></tr>
+            <tr><td>3</td><td><strong>Coloured Pencils 50ct</strong></td><td>Amazon</td><td>Q3 2026</td><td class="dev-pos">+9% POS</td><td>Algorithmic Search Boost</td><td class="conf">79%</td><td><span class="pri LOW">Low</span></td><td><button class="row-action">Review</button></td></tr>
+            <tr><td>4</td><td><strong>Model Magic 4oz</strong></td><td>Walmart</td><td>BTS '26 W31–34</td><td class="dev-neg">-18% POS</td><td>Substitution Risk (Play-Doh)</td><td class="conf">84%</td><td><span class="pri HIGH">High</span></td><td><button class="row-action">Review</button></td></tr>
+            <tr><td>5</td><td><strong>Inspiration Art Case</strong></td><td>Costco</td><td>Holiday '26 prep</td><td class="dev-pos">+31% pre-order</td><td>Pre-promo signal</td><td class="conf">76%</td><td><span class="pri MEDIUM">Medium</span></td><td><button class="row-action">Review</button></td></tr>
+            <tr><td>6</td><td><strong>Silly Putty Original</strong></td><td>Costco</td><td>Q2 2026</td><td class="dev-pos">+6% POS</td><td>Bundle effect</td><td class="conf">88%</td><td><span class="pri LOW">Low</span></td><td><button class="row-action">Review</button></td></tr>
+            <tr><td>7</td><td><strong>Globbles 4-pack</strong></td><td>Amazon</td><td>Q3 2026</td><td class="dev-pos">+127% POS</td><td>Viral / TikTok-driven demand</td><td class="conf">81%</td><td><span class="pri HIGH">High</span></td><td><button class="row-action">Review</button></td></tr>
+            <tr><td>8</td><td><strong>Crayons Classic 64ct</strong></td><td>Walmart</td><td>BTS '26 baseline</td><td class="dev-zero">on-track</td><td>Baseline confirmed</td><td class="conf">95%</td><td><span class="pri LOW">Low</span></td><td><button class="row-action disabled">— No action —</button></td></tr>
+          </tbody>
+        </table>
+        <div class="panel-foot">
+          <span>Showing 8 of 256</span>
+          <span class="secondary-link" onclick="showToast('Loading next 8 exceptions…')" style="cursor:pointer;text-decoration:underline;color:#000;">Load more →</span>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <span class="secondary-link" onclick="showToast('Opening 2,591 AI-validated items in read-only view')">View AI-Validated Items</span>
+        <button class="btn btn-primary" onclick="goToScreen('screen2',this)">Review Top Exception →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- SCREEN 2 — Exception Workspace -->
+  <!-- ============================================================== -->
+  <section id="screen2" class="screen">
+    <div class="page">
+      <div class="breadcrumb">Demand Monitor &nbsp;›&nbsp; BTS 2026 Batch &nbsp;›&nbsp; <strong>Twistables Crayons 24ct — Walmart</strong></div>
+
+      <div class="page-head">
+        <div>
+          <div class="page-title">Exception Workspace</div>
+          <div class="page-sub">Single-SKU deep-dive · AI-classified for review</div>
+        </div>
+      </div>
+
+      <div class="record-card">
+        <h3>Record header</h3>
+        <div class="record-grid">
+          <div><span class="lbl">SKU:</span> <span class="val">CRAY-TWST-24-WMT</span></div>
+          <div><span class="lbl">Records affected:</span> <span class="val">4 weeks of forecast (W32–W35, BTS 2026)</span></div>
+          <div><span class="lbl">Source feeds:</span> <span class="val">Walmart Retail Link · Easton DC shipments · Walmart vendor portal orders</span></div>
+          <div><span class="lbl">Target system:</span> <span class="val">Crayola SAP S/4 Demand Planning module</span></div>
+          <div><span class="lbl">Batch run:</span> <span class="val">27 April 2026 — overnight</span></div>
+          <div><span class="lbl">Owner:</span> <span class="val">Niall Quinn (S&amp;OP Lead)</span></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="data-block">
+          <div class="db-head">Raw Signal Data</div>
+<pre>Field: 4-week POS pull-through (Walmart, all stores)
+
+Forecast (live):  W29: 12,400  W30: 14,800  W31: 18,200  W32: 22,500
+Actual POS:       W29: 13,100  W30: 17,900  W31: 23,600
+Deviation:        W29: +5.6%   W30: +21.0%  W31: +29.7%
+
+Inventory DOH:    W31: 18 days (target 24)
+Walmart reorder lead time: 6 days
+Easton DC capacity headroom: 38,000 units/wk</pre>
+        </div>
+
+        <div class="ai-callout" id="s2-callout">
+          <div class="ai-head"><span class="spark">✦</span> What the AI did</div>
+          <div class="ai-body">
+            Conflict type: <strong>Early Promotion Lift</strong> (not steady-state demand shift)<br>
+            Confidence: <strong>87%</strong><br><br>
+            Pattern matched against:
+            <ul>
+              <li>BTS 2024 — Crayola Markers 12ct at Walmart, same 3-week window, lift of 24%</li>
+              <li>BTS 2025 — Coloured Pencils 24ct at Walmart, lift of 19%</li>
+            </ul>
+            Both prior cases decayed to baseline by W36. No structural shift detected.<br><br>
+            This is a <strong>promotional pull-forward</strong>, not a forecast error. No SKU rationalisation needed.
+          </div>
+        </div>
+      </div>
+
+      <div class="decision-bar">
+        <div class="ai-suggest">AI suggested category: <span class="cat">Early Promotion Lift</span></div>
+        <div class="decision-actions">
+          <select class="override">
+            <option>Override ↓</option>
+            <option>Steady-state demand shift</option>
+            <option>Substitution</option>
+            <option>Supply-driven artefact</option>
+            <option>Data quality issue</option>
+            <option>Escalate to Commercial</option>
+          </select>
+          <button class="btn btn-secondary" onclick="showToast('Override saved — re-running classifier');">Override</button>
+          <button class="btn btn-primary" onclick="approveAndAdvance(this,'Classification approved','screen3')">Approve ✓</button>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <button class="btn btn-secondary" onclick="goToScreen('screen1',this)">← Back to Queue</button>
+        <button class="btn btn-primary" onclick="approveAndAdvance(this,'Classification approved — opening forecast recommendation','screen3')">Approve Classification — View Forecast Recommendation →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- SCREEN 3 — AI Forecast Recommendation -->
+  <!-- ============================================================== -->
+  <section id="screen3" class="screen">
+    <div class="page">
+      <div class="breadcrumb">Demand Monitor &nbsp;›&nbsp; Twistables 24ct — Walmart &nbsp;›&nbsp; <strong>Forecast Recommendation</strong></div>
+
+      <div class="page-head">
+        <div>
+          <div class="page-title">AI Forecast Recommendation</div>
+          <div class="page-sub">Step 4 — Resolve · Niall Quinn decision moment</div>
+        </div>
+      </div>
+
+      <div class="resolution-card">
+        <h2>Proposed Forecast Adjustment</h2>
+        <div class="res-line"><span class="lbl">SKU:</span> <span class="val">Twistables Crayons 24ct (Walmart)</span></div>
+        <div class="res-line"><span class="lbl">Action:</span> <span class="val">Lift weeks 32–35 by +18% · Hold weeks 36+ flat</span></div>
+        <div class="res-line"><span class="lbl">Impact:</span> <span class="val">6,840 incremental units flow through Easton DC</span></div>
+        <div class="res-line"><span class="lbl">Walmart fill rate:</span> <span class="val">protected (was at risk of dropping below 96%)</span></div>
+        <div class="res-line"><span class="lbl">Reversible:</span> <span class="val">Yes — adjustment can be unwound until Friday's batch</span></div>
+      </div>
+
+      <div class="ai-callout in" style="margin-bottom:20px;">
+        <div class="ai-head"><span class="spark">✦</span> What the AI used to make this recommendation</div>
+        <div class="ai-body">
+          <ul>
+            <li>BTS 2024 precedent decay curve — Crayola Markers 12ct, Walmart, +24% lift sustained 3 weeks then decayed by W36</li>
+            <li>BTS 2025 precedent — Coloured Pencils 24ct +19%, identical decay shape</li>
+            <li>Easton DC capacity for next 4 weeks: <strong>152,000 units headroom</strong> — adjustment fits within plant plan</li>
+            <li>Walmart Vendor Hub: order pattern consistent with promotional run, no markdown signal</li>
+            <li>No conflicting signals from Target, Amazon, or Costco for this SKU</li>
+          </ul>
+          Decision-window risk: <strong>low</strong>. Walmart reorder lead time 6 days vs adjustment horizon of 4 weeks.
+        </div>
+      </div>
+
+      <div class="cta-row" style="justify-content:flex-start;">
+        <button class="btn btn-primary" onclick="approveAndAdvance(this,'Recommendation queued for tonight\\'s SAP batch','screen4')">Approve Recommendation — Apply to SAP Tonight ✓</button>
+        <button class="btn btn-secondary" onclick="showToast('Edit mode — adjust lift % manually')">Edit Recommendation — Adjust Lift %</button>
+        <button class="btn btn-amber" onclick="showToast('Escalation drafted to Commercial Lead')">Escalate to Commercial Lead</button>
+      </div>
+
+      <div class="impact-block">
+        <h4>If approved</h4>
+        <ul>
+          <li>6,840 incremental units released to Easton production schedule</li>
+          <li>Walmart fill rate held above 96% target</li>
+          <li>Forecast accuracy on this SKU expected to improve from 73% → 91%</li>
+          <li>Operating-calendar entry pre-drafted for Wednesday S&amp;OP review</li>
+          <li>Audit trail logged automatically to SAP IBP</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- SCREEN 4 — Cross-functional Alignment -->
+  <!-- ============================================================== -->
+  <section id="screen4" class="screen">
+    <div class="page">
+      <div class="breadcrumb">Demand Monitor &nbsp;›&nbsp; Twistables 24ct — Walmart &nbsp;›&nbsp; <strong>Alignment messages</strong></div>
+
+      <div class="page-head">
+        <div>
+          <div class="page-title">AI-drafted alignment messages</div>
+          <div class="page-sub">Twistables Crayons 24ct adjustment · operating calendar + 2 emails</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
+        <div>
+          <div class="email-card" id="card-cal">
+            <div class="ec-head"><span>Operating Calendar Entry — Wednesday 30 April S&amp;OP</span><span class="pill">AI drafted</span></div>
+            <div class="ec-body">
+              <div class="field"><span class="k">Topic:</span><span class="typed" data-text="Twistables 24ct (Walmart) — BTS '26 lift adjustment"></span></div>
+              <div class="field"><span class="k">Owner:</span><span class="typed" data-text="Niall Quinn"></span></div>
+              <div class="field"><span class="k">Action:</span><span class="typed" data-text="Forecast +18% W32–35, hold W36+"></span></div>
+              <div class="field"><span class="k">Linked:</span><span class="typed" data-text="SAP IBP entry CRAY-TWST-24-WMT-2604"></span></div>
+              <div class="field"><span class="k">Time req:</span><span class="typed" data-text="4 minutes"></span></div>
+            </div>
+          </div>
+
+          <div class="email-card" id="card-email1">
+            <div class="ec-head"><span>Email — Commercial Lead</span><span class="pill">AI drafted</span></div>
+            <div class="ec-body">
+              <div class="field"><span class="k">To:</span><span class="typed" data-text="commercial-lead@crayola.com"></span></div>
+              <div class="field"><span class="k">Subject:</span><span class="typed" data-text="BTS 2026 — Twistables 24ct (Walmart) forecast lift +18% W32–35"></span></div>
+              <div class="body-text typed-block" data-text="Hi —
+
+Heads-up that the demand sensing model has flagged Twistables 24ct at Walmart running 22% above forecast on early POS pull-through (W29–W31). Pattern matches BTS 2024 Markers 12ct (+24%, decayed by W36) and BTS 2025 Coloured Pencils 24ct (+19%, same decay shape) — classic early-promotional lift, not a structural shift.
+
+I've approved a +18% lift on W32–35 with W36+ held flat. Easton DC has 152k units of headroom across the window so plant plan absorbs the change. Walmart fill-rate stays above the 96% target.
+
+Adjustment is reversible until Friday's batch if Commercial sees something I haven't.
+
+Niall — via Demand Sensing Monitor"></div>
+            </div>
+          </div>
+
+          <div class="email-card" id="card-email2">
+            <div class="ec-head"><span>Plant Note — Easton DC</span><span class="pill">AI drafted</span></div>
+            <div class="ec-body">
+              <div class="field"><span class="k">To:</span><span class="typed" data-text="easton-planning@crayola.com"></span></div>
+              <div class="field"><span class="k">Subject:</span><span class="typed" data-text="Production volume note — Twistables 24ct, +6,840 units across W32–35"></span></div>
+              <div class="body-text typed-block" data-text="Easton planning team —
+
+Posting +6,840 units across W32–35 on Twistables 24ct ahead of Walmart BTS '26 pull-through. Per the capacity report this morning, you have 152k units of headroom across the window so this should sit well inside the plan.
+
+Please flag back if any constraint surfaces (line balance, paper supply, label inventory) and we'll re-run before Friday's batch.
+
+Niall — via Demand Sensing Monitor"></div>
+            </div>
+          </div>
+
+          <div class="cta-row" style="margin-top:18px;">
+            <button class="btn btn-secondary" onclick="showToast('Cancelled — no messages sent')">Cancel</button>
+            <button class="btn btn-secondary" onclick="showToast('Edit mode enabled')">Edit Each</button>
+            <button class="btn btn-primary" onclick="approveAndAdvance(this,'All 3 messages sent · calendar entry queued','screen5')">Send All ✓</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="ai-callout in" style="position:sticky;top:90px;">
+            <div class="ai-head"><span class="spark">✦</span> What the AI prepared</div>
+            <div class="ai-body">
+              Three messages drafted from the approved adjustment.
+              <ul>
+                <li>Operating-calendar entry queued for Wednesday S&amp;OP</li>
+                <li>Email to Commercial — paraphrases the precedent + Walmart fill-rate logic</li>
+                <li>Plant note to Easton — capacity sign-off requested</li>
+              </ul>
+              No additional manual steps required. All messages are editable before send.
+              <br><br>
+              <strong>Time saved:</strong> ~22 minutes vs manual drafting.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- SCREEN 5 — S&OP Review Deck Slide Generation -->
+  <!-- ============================================================== -->
+  <section id="screen5" class="screen">
+    <div class="page">
+      <div class="breadcrumb">Demand Monitor &nbsp;›&nbsp; Twistables 24ct — Walmart &nbsp;›&nbsp; <strong>S&amp;OP slide</strong></div>
+
+      <div class="page-head">
+        <div>
+          <div class="page-title">Auto-generated slide</div>
+          <div class="page-sub">Wednesday 30 April S&amp;OP review · for Arvind Sahu's deck</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px;">
+        <div class="slide-frame">
+          <div class="slide-yellow-bar"></div>
+          <div class="slide-body">
+            <div class="slide-title">BTS 2026 Demand Sensing — Twistables 24ct (Walmart) Adjustment</div>
+            <div class="slide-kpi">
+              <div class="k"><strong>91%</strong>Forecast accuracy<br><span style="color:var(--muted);">(was 73%)</span></div>
+              <div class="k"><strong>Cleared</strong>Fill-rate risk</div>
+              <div class="k"><strong>-£42k</strong>Inventory exposure</div>
+              <div class="k"><strong>152k</strong>Plant capacity HR</div>
+            </div>
+            <div class="slide-chart" id="s5chart">
+              <div class="bg" style="height:30%;"><span class="label">W29</span></div>
+              <div class="bg actual" style="height:38%;"><span class="label">W29 act</span></div>
+              <div class="bg" style="height:35%;"><span class="label">W30</span></div>
+              <div class="bg actual" style="height:50%;"><span class="label">W30 act</span></div>
+              <div class="bg" style="height:42%;"><span class="label">W31</span></div>
+              <div class="bg actual" style="height:62%;"><span class="label">W31 act</span></div>
+              <div class="bg" style="height:50%;"><span class="label">W32</span></div>
+              <div class="bg adj" style="height:65%;"><span class="label">W32 adj</span></div>
+              <div class="bg" style="height:48%;"><span class="label">W33</span></div>
+              <div class="bg adj" style="height:62%;"><span class="label">W33 adj</span></div>
+              <div class="bg" style="height:42%;"><span class="label">W34</span></div>
+              <div class="bg adj" style="height:55%;"><span class="label">W34 adj</span></div>
+              <div class="bg" style="height:38%;"><span class="label">W35</span></div>
+              <div class="bg adj" style="height:48%;"><span class="label">W35 adj</span></div>
+            </div>
+            <div class="slide-foot">
+              <div class="action">Action: +18% lift W32–35, held W36+ flat. Approved Niall Quinn 28 Apr.</div>
+              Approval trail: AI Confidence 87% · Precedents BTS '24 / BTS '25 · Audited 28 Apr 09:02
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ai-callout in" style="margin-bottom:14px;">
+            <div class="ai-head"><span class="spark">✦</span> What the AI generated</div>
+            <div class="ai-body">
+              Pulled current SAP forecast, BTS 2024 / BTS 2025 precedents, Walmart fill-rate target, plant capacity report. Rendered slide using Crayola S&amp;OP template. Audit trail linked.
+            </div>
+          </div>
+          <div class="edit-panel">
+            <h3>Edit slide content</h3>
+            <div class="field-grp">
+              <label>Slide title</label>
+              <input value="BTS 2026 Demand Sensing — Twistables 24ct (Walmart) Adjustment" />
+            </div>
+            <div class="field-grp">
+              <label>Action bullet</label>
+              <textarea>+18% lift W32–35, held W36+ flat. Approved Niall Quinn 28 Apr.</textarea>
+            </div>
+            <div class="field-grp">
+              <label>Approval trail</label>
+              <input value="AI Confidence 87% · Precedents BTS '24 / BTS '25 · Audited 28 Apr 09:02" />
+            </div>
+            <button class="btn btn-secondary" style="width:100%;" onclick="regenerateSlide(this)" id="regen-btn">↻ Regenerate from latest data</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <button class="btn btn-secondary" onclick="showToast('Opening full Wednesday S&OP deck preview')">Preview Full Deck</button>
+        <button class="btn btn-primary" onclick="approveAndAdvance(this,'Slide added to Wednesday S&OP deck','screen6')">Add to Wednesday S&amp;OP Deck ✓</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- SCREEN 6 — Walmart Spring 2027 Line Review -->
+  <!-- ============================================================== -->
+  <section id="screen6" class="screen">
+    <div class="page">
+      <div class="breadcrumb">Retailer Decks &nbsp;›&nbsp; <strong>Walmart Spring 2027 Line Review</strong></div>
+
+      <div class="page-head">
+        <div>
+          <div class="page-title">Walmart Spring 2027 Line Review — AI-generated proposal deck</div>
+          <div class="page-sub" style="font-style:italic;">Confidential preview · For internal review before submission · Owner: Ben Thomas</div>
+        </div>
+        <div style="font-size:11px;color:var(--amber);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;background:#FFF3E0;padding:6px 12px;border-radius:3px;">Confidential — Ben Thomas review</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:20px;">
+        <div class="deck-slide">
+          <div class="ds-head">
+            <div class="ds-title">Crayola × Walmart Spring 2027 — Range &amp; Sell-Through Proposal</div>
+            <div class="ds-walmart">Walmart · 6,000 stores</div>
+          </div>
+
+          <div class="deck-block">
+            <h4>1. Range proposal</h4>
+            <div class="deck-sku-row"><span><strong>Crayola Twistables Bold &amp; Bright 18ct</strong> · new</span><span class="add">+ ADD</span></div>
+            <div class="deck-sku-row"><span><strong>Crayola Take Note! Erasable Highlighters 6ct</strong> · new</span><span class="add">+ ADD</span></div>
+            <div class="deck-sku-row"><span><strong>Crayola Glitter Markers 12ct (Spring refresh)</strong> · new</span><span class="add">+ ADD</span></div>
+            <div class="deck-sku-row"><span><strong>Crayola Gel FX Markers 6ct</strong> · low velocity</span><span class="disc">— DISC</span></div>
+          </div>
+
+          <div class="deck-block">
+            <h4>2. Sell-through evidence</h4>
+            <div class="deck-mini-chart">
+              <div class="b" style="height:35%;"></div>
+              <div class="b" style="height:48%;"></div>
+              <div class="b" style="height:55%;"></div>
+              <div class="b hi" style="height:72%;"></div>
+              <div class="b hi" style="height:80%;"></div>
+              <div class="b" style="height:62%;"></div>
+              <div class="b" style="height:58%;"></div>
+              <div class="b hi" style="height:88%;"></div>
+            </div>
+            <div class="deck-bullet">Twistables franchise grew 14% YoY at Walmart in 2024–25 (POS data, all stores)</div>
+            <div class="deck-bullet">Erasable highlighter category up 22% across Walmart school/office aisle</div>
+            <div class="deck-bullet">Gel FX Markers slot velocity is bottom-decile vs adjacent SKUs (Q4 2025)</div>
+          </div>
+
+          <div class="deck-block">
+            <h4>3. Shopper insights</h4>
+            <div class="deck-bullet">Craft-kit attach rate up 18% among Walmart+ loyalty members ages 7–11 (Crayola consumer panel Q1 2026, n=1,400)</div>
+            <div class="deck-bullet">"Bold &amp; Bright" colour palette over-indexes with Hispanic households — Walmart's fastest-growing segment in the school category</div>
+            <div class="deck-bullet">Erasable variants drive 31% trade-up on price-per-unit (Crayola conjoint study, Mar 2026)</div>
+          </div>
+
+          <div class="deck-block">
+            <h4>4. Margin &amp; incremental sales</h4>
+            <div class="deck-money">
+              <div class="m"><strong>+£1.4M</strong><span>Incremental net sales</span></div>
+              <div class="m"><strong>+210bp</strong><span>Margin lift</span></div>
+              <div class="m"><strong>96%+</strong><span>Fill-rate confidence</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="interrog-pane" id="interrog-pane">
+          <div class="interrog-head">
+            <div>
+              <div class="it-title">AI Interrogator</div>
+              <div class="it-sub">Simulated Walmart buyer-AI · 4 cycles</div>
+            </div>
+            <div class="it-status" id="it-status">RUNNING…</div>
+          </div>
+          <!-- bubbles injected by JS -->
+          <div class="interrog-banner" id="interrog-banner">AI strengthened 3 claims · 1 claim flagged for human review · Deck ready for Ben's review</div>
+        </div>
+      </div>
+
+      <div class="ai-callout in" style="margin-top:20px;">
+        <div class="ai-head"><span class="spark">✦</span> What the AI did</div>
+        <div class="ai-body">
+          Generated the proposal deck from current SAP demand plan + Walmart POS history + Crayola consumer panel · Ran 4 buyer-AI interrogation cycles · Pre-strengthened 3 weak points · Flagged 1 claim (loyalty data confidence interval) for Ben's review before submission.
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <button class="btn btn-secondary" onclick="showToast('Exporting PPTX — Walmart Spring 2027 deck')">Export PPTX</button>
+        <button class="btn btn-secondary" onclick="rerunInterrogator()">Re-run Interrogator</button>
+        <button class="btn btn-primary" onclick="approveAndAdvance(this,'Deck sent to Ben Thomas for review','screen7')">Send to Ben for Review →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- SCREEN 7 — Executive S&OP Health Dashboard -->
+  <!-- ============================================================== -->
+  <section id="screen7" class="screen">
+    <div class="page">
+      <div class="page-head">
+        <div>
+          <div class="page-title">Crayola Demand Sensing — Weekly Health</div>
+          <div class="page-sub">Week of 21–28 April 2026 · Powered by Conquer AI · For Arvind Sahu &amp; Ben Thomas</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);text-align:right;">
+          Auto-published every Monday<br>Last refresh: 28 Apr 06:00 UTC
+        </div>
+      </div>
+
+      <div class="hero-grid">
+        <div class="hero-card green animate">
+          <div class="num" data-count="2591">0</div>
+          <div class="label">SKU-weeks Auto-Validated</div>
+          <div class="sub">↑ 312 from last week</div>
+          <div class="line"></div>
+        </div>
+        <div class="hero-card yellow animate">
+          <div class="num" data-count="91" data-suffix="%">0%</div>
+          <div class="label">Exception Auto-Classification</div>
+          <div class="sub">No human touch required</div>
+          <div class="line"></div>
+        </div>
+        <div class="hero-card green animate">
+          <div class="num" data-count="27.4" data-suffix=" hrs">0</div>
+          <div class="label">Planner Time Saved This Week</div>
+          <div class="sub">≈ 3.4 working days</div>
+          <div class="line"></div>
+        </div>
+        <div class="hero-card amber animate">
+          <div class="num" data-count="1">0</div>
+          <div class="label">Retailer Line Review Deck Drafted</div>
+          <div class="sub">Walmart Spring '27 — pending Ben review</div>
+          <div class="line"></div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;font-weight:700;margin:28px 0 12px;">Before vs After</h3>
+      <table class="ba-table">
+        <thead>
+          <tr><th>Metric</th><th>Before AI</th><th>With AI (this week)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Time to triage 2,847 SKU-weeks</strong></td><td class="before">~28 hours manual</td><td class="after">0 hours (overnight, automated)</td></tr>
+          <tr><td><strong>Planner touches required</strong></td><td class="before">2,847</td><td class="after">256</td></tr>
+          <tr><td><strong>Forecast accuracy (BTS SKUs)</strong></td><td class="before">73%</td><td class="after">91%</td></tr>
+          <tr><td><strong>Calendar / email drafts written</strong></td><td class="before">manually each time</td><td class="after">14 auto-drafted</td></tr>
+          <tr><td><strong>Retailer-facing deck cycle time</strong></td><td class="before">6–8 days</td><td class="after">&lt;1 day (Screen 6)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="chart-panel">
+        <h3>Weekly resolution trend</h3>
+        <div class="chart-area" id="trend-chart">
+          <div class="chart-bar"><span class="total">380</span><div class="stacked" data-h="68"><div class="seg-yel" data-h="8"></div><div class="seg-grn" data-h="60"></div></div><span class="day">Mon 21</span></div>
+          <div class="chart-bar"><span class="total">410</span><div class="stacked" data-h="74"><div class="seg-yel" data-h="6"></div><div class="seg-grn" data-h="68"></div></div><span class="day">Tue 22</span></div>
+          <div class="chart-bar"><span class="total">460</span><div class="stacked" data-h="82"><div class="seg-yel" data-h="7"></div><div class="seg-grn" data-h="75"></div></div><span class="day">Wed 23</span></div>
+          <div class="chart-bar"><span class="total">510</span><div class="stacked" data-h="91"><div class="seg-yel" data-h="8"></div><div class="seg-grn" data-h="83"></div></div><span class="day">Thu 24</span></div>
+          <div class="chart-bar"><span class="total">290</span><div class="stacked" data-h="52"><div class="seg-yel" data-h="5"></div><div class="seg-grn" data-h="47"></div></div><span class="day">Fri 25</span></div>
+          <div class="chart-bar"><span class="total">541</span><div class="stacked" data-h="97"><div class="seg-yel" data-h="11"></div><div class="seg-grn" data-h="86"></div></div><span class="day">Mon 28</span></div>
+        </div>
+        <div class="chart-legend">
+          <span><span class="sw" style="background:var(--green);"></span>AI auto-resolved</span>
+          <span><span class="sw" style="background:var(--crayola-yellow);"></span>Niall approved</span>
+        </div>
+      </div>
+
+      <div class="ai-callout in" style="margin-bottom:24px;">
+        <div class="ai-head"><span class="spark">✦</span> What the AI delivered this week</div>
+        <div class="ai-body">
+          2,591 SKU-weeks validated with zero human input · 27.4 planner hours saved · 14 alignment messages auto-drafted · 1 retailer line review deck generated and self-interrogated · 0 SLA breaches in closed items · Audit trail 100% complete.
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;font-weight:700;margin:0 0 12px;">Open actions for Arvind &amp; Ben</h3>
+      <div class="open-actions">
+        <div class="oa-row">
+          <span>Walmart Spring '27 line review deck awaiting Ben review</span>
+          <span class="oa-link" onclick="goToScreen('screen6',this)">Open Screen 6 →</span>
+        </div>
+        <div class="oa-row">
+          <span>Approve scope expansion to Target &amp; Amazon line review prep</span>
+          <span class="oa-link" onclick="showToast('Opening scope discussion thread')">Scope Discussion →</span>
+        </div>
+        <div class="oa-row">
+          <span>Brief David Carter ahead of London 28 Apr review</span>
+          <span class="oa-link" onclick="showToast('Generating Carter briefing pack')">Generate Briefing</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="foot">
+    <div class="foot-rainbow"></div>
+    <div class="foot-inner">
+      <div>crayola × Conquer AI · Demand Sensing Monitor · Internal preview build</div>
+      <div>Powered by Conquer AI · v0.4.2 · Easton, PA &amp; London</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   AUTH GATE — sha-256 of "crayola2026"
+   ========================================================= */
+const PW_HASH = "9f4a3c1f6d2a8b0e5c7f1a9d4e2b6c8a0f3e7d5c9a1b4e8d6c2a7f0b3e9d1c5a"; // placeholder; recomputed below
+async function sha256(s){
+  const buf = new TextEncoder().encode(s);
+  const h = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+const TARGET_HASH_PROMISE = sha256("crayola2026");
+
+async function checkAuth(){
+  if (sessionStorage.getItem('crayola_auth')==='ok'){
+    document.getElementById('auth-gate').style.display='none';
+    document.getElementById('app').style.display='block';
+    initScreen('screen1');
+    return;
+  }
+  const target = await TARGET_HASH_PROMISE;
+  document.getElementById('auth-go').onclick = async ()=>{
+    const v = document.getElementById('auth-pw').value;
+    const h = await sha256(v);
+    if (h === target){
+      sessionStorage.setItem('crayola_auth','ok');
+      document.getElementById('auth-gate').style.display='none';
+      document.getElementById('app').style.display='block';
+      initScreen('screen1');
+    } else {
+      const err = document.getElementById('auth-err');
+      err.textContent = "Incorrect access code.";
+      setTimeout(()=>err.textContent="",2200);
+    }
+  };
+  document.getElementById('auth-pw').addEventListener('keydown',e=>{
+    if (e.key==='Enter') document.getElementById('auth-go').click();
+  });
+}
+checkAuth();
+
+/* =========================================================
+   PROGRESS BAR
+   ========================================================= */
+function fireProgress(){
+  const p = document.getElementById('top-progress');
+  p.style.transition = 'none';
+  p.style.width = '0';
+  p.style.opacity = '1';
+  // force reflow
+  void p.offsetWidth;
+  p.style.transition = 'width 0.6s cubic-bezier(0.65,0.05,0.36,1), opacity 0.4s ease 0.5s';
+  p.style.width = '100%';
+  setTimeout(()=>{ p.style.opacity = '0'; }, 650);
+}
+
+/* =========================================================
+   LOADER
+   ========================================================= */
+const loaderMsgs = {
+  screen1: ["Fetching SKU data…","Aggregating overnight feeds…"],
+  screen2: ["Running precedent match…","Loading SKU history…"],
+  screen3: ["Calculating recommendation…","Pulling capacity headroom…"],
+  screen4: ["Drafting alignment messages…","Composing emails…"],
+  screen5: ["Generating slide…","Rendering S&OP template…"],
+  screen6: ["Running buyer-AI interrogation…","Generating Walmart deck…"],
+  screen7: ["Aggregating weekly metrics…","Building dashboard…"]
+};
+function showLoader(target){
+  return new Promise(res=>{
+    const l = document.getElementById('loader');
+    const m = document.getElementById('loader-msg');
+    const msgs = loaderMsgs[target] || ["Loading…"];
+    m.textContent = msgs[0];
+    l.classList.add('active');
+    let i = 0;
+    const iv = setInterval(()=>{
+      i = (i+1) % msgs.length;
+      m.textContent = msgs[i];
+    }, 600);
+    setTimeout(()=>{
+      clearInterval(iv);
+      l.classList.remove('active');
+      res();
+    }, 1100);
+  });
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+function goToScreen(target, btnEl){
+  if (btnEl) ripple(btnEl);
+  fireProgress();
+  showLoader(target).then(()=>{
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    window.scrollTo({top:0,behavior:'instant'});
+    syncNavTabs(target);
+    initScreen(target);
+  });
+}
+function syncNavTabs(target){
+  document.querySelectorAll('.nav-tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.target === target);
+  });
+  // Demand Monitor active for screens 1-5
+  if (['screen1','screen2','screen3','screen4','screen5'].includes(target)){
+    const dm = document.querySelector('.nav-tab[data-target="screen1"]');
+    if (dm) dm.classList.add('active');
+  }
+}
+document.querySelectorAll('.nav-tab').forEach(t=>{
+  t.addEventListener('click',()=>goToScreen(t.dataset.target, t));
+});
+
+/* =========================================================
+   APPROVE-AND-ADVANCE
+   ========================================================= */
+function approveAndAdvance(btn, toastMsg, target){
+  ripple(btn);
+  btn.disabled = true;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<span style="display:inline-block;width:12px;height:12px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;vertical-align:middle;animation:spin 0.6s linear infinite;margin-right:6px;"></span> Processing…';
+  setTimeout(()=>{
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    showToast(toastMsg);
+    if (target) goToScreen(target);
+  }, 700);
+}
+
+/* =========================================================
+   TOASTS
+   ========================================================= */
+function showToast(msg){
+  const stack = document.getElementById('toast-stack');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<span style="color:var(--crayola-yellow);margin-right:8px;">✓</span>' + msg;
+  stack.appendChild(t);
+  setTimeout(()=>t.remove(), 3600);
+}
+
+/* =========================================================
+   RIPPLE
+   ========================================================= */
+function ripple(btn){
+  if (!btn || !btn.getBoundingClientRect) return;
+  const rect = btn.getBoundingClientRect();
+  const r = document.createElement('span');
+  r.className = 'ripple';
+  const size = Math.max(rect.width, rect.height);
+  r.style.width = r.style.height = size + 'px';
+  r.style.left = (rect.width/2 - size/2) + 'px';
+  r.style.top = (rect.height/2 - size/2) + 'px';
+  btn.appendChild(r);
+  setTimeout(()=>r.remove(), 500);
+}
+
+/* =========================================================
+   COUNT-UP
+   ========================================================= */
+function countUp(el){
+  if (el.dataset.done) return;
+  el.dataset.done = '1';
+  const target = parseFloat(el.dataset.count);
+  const suffix = el.dataset.suffix || '';
+  const isFloat = !Number.isInteger(target);
+  const dur = 1100;
+  const start = performance.now();
+  function tick(now){
+    const t = Math.min(1, (now-start)/dur);
+    const eased = 1 - Math.pow(1-t, 3);
+    const v = target * eased;
+    el.textContent = (isFloat ? v.toFixed(1) : Math.round(v).toLocaleString()) + suffix;
+    if (t < 1) requestAnimationFrame(tick);
+    else el.textContent = (isFloat ? target.toFixed(1) : Math.round(target).toLocaleString()) + suffix;
+  }
+  requestAnimationFrame(tick);
+}
+
+/* =========================================================
+   TYPE EFFECT
+   ========================================================= */
+function typeText(el, text, speed=14){
+  return new Promise(res=>{
+    el.textContent = '';
+    let i = 0;
+    function step(){
+      if (i <= text.length){
+        el.textContent = text.slice(0, i);
+        i++;
+        setTimeout(step, speed);
+      } else { res(); }
+    }
+    step();
+  });
+}
+async function runTyping(scope){
+  const fields = scope.querySelectorAll('.typed:not(.done)');
+  for (const f of fields){
+    f.classList.add('done');
+    await typeText(f, f.dataset.text, 8);
+  }
+  const blocks = scope.querySelectorAll('.typed-block:not(.done)');
+  for (const b of blocks){
+    b.classList.add('done');
+    await typeText(b, b.dataset.text, 4);
+  }
+}
+
+/* =========================================================
+   PER-SCREEN INIT
+   ========================================================= */
+const initialised = {};
+function initScreen(id){
+  // run callouts slide-in for all screens (idempotent on .in)
+  document.querySelectorAll('#'+id+' .ai-callout').forEach((c,i)=>{
+    setTimeout(()=>c.classList.add('in'), 200 + i*120);
+  });
+
+  if (id === 'screen1') initS1();
+  if (id === 'screen2') initS2();
+  if (id === 'screen3') initS3();
+  if (id === 'screen4') initS4();
+  if (id === 'screen5') initS5();
+  if (id === 'screen6') initS6();
+  if (id === 'screen7') initS7();
+}
+
+function initS1(){
+  document.querySelectorAll('#screen1 .stat-num').forEach(countUp);
+  const rows = document.querySelectorAll('#exception-tbody tr');
+  rows.forEach((r,i)=>{
+    r.classList.remove('in');
+    setTimeout(()=>r.classList.add('in'), 80 + i*60);
+  });
+}
+function initS2(){
+  document.querySelectorAll('#screen2 .stat-num').forEach(countUp);
+}
+function initS3(){ /* callouts handled */ }
+function initS4(){
+  if (initialised.s4) return;
+  initialised.s4 = true;
+  setTimeout(()=>runTyping(document.getElementById('screen4')), 350);
+}
+function initS5(){ /* slide is static; chart bars are CSS heights */ }
+
+/* SCREEN 6 INTERROGATOR */
+const interrogScript = [
+  {who:'buyer', text:"Why this SKU vs the SKU you discontinued? Show me last year's Q4 velocity."},
+  {who:'crayola', text:"Pulling Walmart Q4 2025 velocity: Gel FX Markers 6ct sat at 2.1 units/store/wk, bottom-decile in the marker bay. Twistables Bold & Bright 18ct, in pilot at 312 Walmart stores Q1 2026, ran at 4.8 units/store/wk — substitution rate 71%, no cannibalisation of existing Twistables 24ct."},
+  {who:'buyer', text:"Your shopper insight on craft kit attach is generic — what's your evidence?"},
+  {who:'crayola', text:"Crayola consumer panel Q1 2026 (n=1,400 Walmart+ loyalty households, ages 7–11): craft-kit attach up 18% YoY · cross-referenced against Walmart loyalty SKU-pair data showing markers + craft kit co-purchase rate 0.34 (vs category 0.21). Citing both."},
+  {who:'buyer', text:"Margin claim assumes 2% lift — where does that come from?"},
+  {who:'crayola', text:"Spring 2025 line review: 5-SKU swap on Crayola erasable highlighter range delivered +180bp realised margin against +210bp planned (87% hit rate). Carrying same assumption with confidence band ±40bp. Flagging this for Ben — recommend tightening to +170bp planned."},
+  {who:'buyer', text:"Last response — what's your fill-rate confidence at 6,000-store rollout?"},
+  {who:'crayola', text:"Easton DC capacity plan models 6,000-store rollout at 96.4% fill-rate confidence over the first 12 weeks. Reference: Twistables 24ct W32 BTS '26 adjustment (Niall Quinn, 28 Apr 2026) absorbed +6,840 units inside 152k of headroom — demand-sensing model now live, so any deviation is caught and corrected within 24h."}
+];
+let s6Played = false;
+function initS6(){
+  if (s6Played) return;
+  s6Played = true;
+  playInterrogator();
+}
+async function playInterrogator(){
+  const pane = document.getElementById('interrog-pane');
+  // remove any prior dynamic bubbles
+  pane.querySelectorAll('.bubble').forEach(b=>b.remove());
+  const banner = document.getElementById('interrog-banner');
+  banner.classList.remove('in');
+  document.getElementById('it-status').textContent = 'RUNNING…';
+  document.getElementById('it-status').style.color = 'var(--crayola-yellow)';
+  for (let i=0; i<interrogScript.length; i++){
+    const m = interrogScript[i];
+    const b = document.createElement('div');
+    b.className = 'bubble ' + m.who;
+    const who = m.who === 'buyer' ? 'Walmart Buyer-AI' : 'Crayola AI';
+    b.innerHTML = '<div class="who">'+who+'</div><div class="bb"></div>';
+    pane.insertBefore(b, banner);
+    requestAnimationFrame(()=>b.classList.add('in'));
+    pane.scrollTop = pane.scrollHeight;
+    await typeText(b.querySelector('.bb'), m.text, m.who==='buyer'?7:5);
+    pane.scrollTop = pane.scrollHeight;
+    await new Promise(r=>setTimeout(r, 250));
+  }
+  banner.classList.add('in');
+  document.getElementById('it-status').textContent = 'COMPLETE';
+  document.getElementById('it-status').style.color = '#7CD389';
+  pane.scrollTop = pane.scrollHeight;
+}
+function rerunInterrogator(){
+  s6Played = false;
+  showToast('Re-running buyer-AI interrogation cycles');
+  initS6();
+}
+
+function initS7(){
+  if (initialised.s7) return;
+  initialised.s7 = true;
+  document.querySelectorAll('#screen7 .num').forEach(countUp);
+  // animate bar chart
+  setTimeout(()=>{
+    document.querySelectorAll('#trend-chart .stacked').forEach(s=>{
+      const h = s.dataset.h;
+      s.style.height = (h*2) + 'px';
+      s.querySelectorAll('.seg-yel').forEach(seg=>seg.style.height = (parseFloat(seg.dataset.h)*2)+'px');
+      s.querySelectorAll('.seg-grn').forEach(seg=>seg.style.height = (parseFloat(seg.dataset.h)*2)+'px');
+    });
+  }, 300);
+}
+
+/* =========================================================
+   REGENERATE SLIDE (Screen 5)
+   ========================================================= */
+function regenerateSlide(btn){
+  ripple(btn);
+  btn.disabled = true;
+  const original = btn.innerHTML;
+  btn.innerHTML = '<span style="display:inline-block;width:10px;height:10px;border:2px solid rgba(0,0,0,0.25);border-top-color:#000;border-radius:50%;vertical-align:middle;animation:spin 0.6s linear infinite;margin-right:6px;"></span> Regenerating…';
+  setTimeout(()=>{
+    btn.disabled = false;
+    btn.innerHTML = original;
+    showToast('Slide regenerated from latest SAP forecast');
+  }, 1100);
+}
+
+/* =========================================================
+   STAT CARD UNDERLINE TRIGGER (re-trigger on screen change)
+   ========================================================= */
+const _origInit = initScreen;
+window.initScreen = function(id){
+  document.querySelectorAll('#'+id+' .stat-card.animate, #'+id+' .hero-card.animate').forEach(c=>{
+    c.classList.remove('animate');
+    void c.offsetWidth;
+    c.classList.add('animate');
+  });
+  _origInit(id);
+};
+
+/* =========================================================
+   GLOBAL BUTTON RIPPLE
+   ========================================================= */
+document.addEventListener('click', e=>{
+  const b = e.target.closest('.btn, .row-action, .oa-link, .nav-tab');
+  if (b) ripple(b);
+}, true);
+</script>
+</body>
+</html>

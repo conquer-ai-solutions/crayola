@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crayola × Conquer AI — Engagement Materials</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --yellow: #FFCD15;
+  --black: #000000;
+  --white: #FFFFFF;
+  --grey-50: #FAFAFA;
+  --grey-100: #F4F4F4;
+  --grey-200: #E5E5E5;
+  --grey-400: #AAABAB;
+  --grey-700: #4A4A4A;
+  --navy: #1A2B4A;
+  --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-hover: 0 4px 8px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.10);
+}
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--white);
+  color: var(--black);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+body { display: flex; flex-direction: column; }
+
+.topnav {
+  background: var(--white);
+  border-bottom: 1px solid var(--grey-200);
+  padding: 18px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand { display: flex; align-items: baseline; gap: 14px; }
+.wordmark {
+  font-weight: 800;
+  font-size: 22px;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  color: var(--black);
+}
+.brand-sep { color: var(--grey-400); font-weight: 300; }
+.subbrand {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grey-700);
+  letter-spacing: 0.02em;
+}
+.topnav-meta {
+  font-size: 12px;
+  color: var(--grey-400);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.rainbow-strip {
+  height: 2px;
+  background: linear-gradient(90deg,
+    #E63329 0%,
+    #FF8E1E 16.6%,
+    #FFCD15 33.3%,
+    #2ECC71 50%,
+    #2891D9 66.6%,
+    #6E47B5 83.3%,
+    #E63329 100%
+  );
+}
+
+.hero {
+  padding: 64px 40px 32px;
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+}
+.hero h1 {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--black);
+  margin-bottom: 14px;
+}
+.hero h1 .accent {
+  background: linear-gradient(180deg, transparent 60%, var(--yellow) 60%);
+  padding: 0 4px;
+}
+.hero p {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--grey-700);
+  max-width: 680px;
+  line-height: 1.6;
+}
+.hero .meta-row {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--grey-100);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--grey-700);
+  letter-spacing: 0.02em;
+}
+.meta-pill .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--yellow);
+}
+
+.card-grid {
+  padding: 32px 40px 80px;
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: var(--white);
+  border: 1px solid var(--grey-200);
+  border-radius: 12px;
+  padding: 28px 24px 24px;
+  text-decoration: none;
+  color: var(--black);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--yellow);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.card:hover {
+  border-color: var(--black);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+.card:hover::before { transform: scaleX(1); }
+
+.card-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey-400);
+  margin-bottom: 14px;
+}
+.card-tag.live { color: var(--yellow); }
+.card-tag.live::before {
+  content: '●  ';
+  color: var(--yellow);
+  font-size: 8px;
+  margin-right: 2px;
+}
+.card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin-bottom: 10px;
+  color: var(--black);
+}
+.card p {
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--grey-700);
+  line-height: 1.55;
+  flex-grow: 1;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--grey-100);
+}
+.card-meta-text {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--grey-400);
+  letter-spacing: 0.02em;
+}
+.card-cta {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--black);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.card-cta::after {
+  content: '→';
+  transition: transform 0.2s ease;
+}
+.card:hover .card-cta::after { transform: translateX(4px); }
+
+.card.featured {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+.card.featured h2 { color: var(--white); }
+.card.featured p { color: rgba(255,255,255,0.7); }
+.card.featured .card-meta { border-top-color: rgba(255,255,255,0.1); }
+.card.featured .card-cta { color: var(--yellow); }
+.card.featured .card-tag { color: var(--yellow); }
+.card.featured .card-meta-text { color: rgba(255,255,255,0.5); }
+
+footer {
+  margin-top: auto;
+  background: var(--white);
+  border-top: 1px solid var(--grey-200);
+  padding: 24px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--grey-400);
+}
+footer .left { display: flex; align-items: center; gap: 8px; }
+footer strong { color: var(--grey-700); font-weight: 600; }
+
+@media (max-width: 720px) {
+  .topnav, .hero, .card-grid, footer { padding-left: 24px; padding-right: 24px; }
+  .hero h1 { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="brand">
+    <span class="wordmark">crayola</span>
+    <span class="brand-sep">×</span>
+    <span class="subbrand">Conquer AI</span>
+  </div>
+  <span class="topnav-meta">Engagement Materials</span>
+</nav>
+<div class="rainbow-strip"></div>
+
+<section class="hero">
+  <h1>Crayola × Conquer AI<br><span class="accent">engagement workspace</span></h1>
+  <p>Materials produced across the active engagement — discovery briefings, demo prototypes, and the working POC for the 28 April Woking session. Each link below opens a self-contained artefact.</p>
+  <div class="meta-row">
+    <span class="meta-pill"><span class="dot"></span>Engagement: Crayola — AI Strategy &amp; Implementation</span>
+    <span class="meta-pill"><span class="dot"></span>Stage: Discovery</span>
+    <span class="meta-pill"><span class="dot"></span>NDA: Signed Feb 2026</span>
+  </div>
+</section>
+
+<section class="card-grid">
+
+  <a class="card featured" href="web/index.html">
+    <div class="card-tag live">Live POC</div>
+    <h2>Demand Sensing Monitor</h2>
+    <p>Seven-screen interactive demo for Niall Quinn's S&amp;OP team. Walks an exception on Twistables 24ct (Walmart, BTS '26) end-to-end — triage, classification, forecast lift, alignment messaging, S&amp;OP slide auto-generation, retailer line review with AI Interrogator, and the executive health view for Arvind &amp; Ben.</p>
+    <div class="card-meta">
+      <span class="card-meta-text">7 screens · Workflow steps 2–9</span>
+      <span class="card-cta">Open POC</span>
+    </div>
+  </a>
+
+  <a class="card" href="crayola-briefing.html">
+    <div class="card-tag">Briefing</div>
+    <h2>Whiteboard Prep Briefing</h2>
+    <p>Internal Conquer briefing prepared for the whiteboard session — context, stakeholders, workstream framing, and the conversation map for the discovery whiteboard.</p>
+    <div class="card-meta">
+      <span class="card-meta-text">HTML briefing</span>
+      <span class="card-cta">Open</span>
+    </div>
+  </a>
+
+  <a class="card" href="crayola-demo.html">
+    <div class="card-tag">Demo</div>
+    <h2>Innovation-to-Market AI</h2>
+    <p>Indicative demo exploring an Innovation-to-Market AI angle — alternative workstream framing built ahead of the whiteboard. Reference material; not the primary 28 Apr demo.</p>
+    <div class="card-meta">
+      <span class="card-meta-text">Indicative · alternative framing</span>
+      <span class="card-cta">Open</span>
+    </div>
+  </a>
+
+</section>
+
+<footer>
+  <div class="left">
+    <strong>Conquer AI</strong> · Crayola engagement workspace
+  </div>
+  <div>For internal &amp; client review · Confidential</div>
+</footer>
+
+</body>
+</html>
